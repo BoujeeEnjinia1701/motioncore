@@ -1,0 +1,8 @@
+item,qty,spec,supplier,unit_cost_usd,make_buy,notes
+250 to 500 W brushless motor,,,,,,
+Open-source motor controller (VESC class),,,,,,
+Hardwired emergency stop and contactor,,,,,,
+Brake interlock switches,,,,,,
+Throttle or command input board,,,,,,
+Heat sink enclosure,,,,,,
+Wiring harness with keyed connectors,,,,,,

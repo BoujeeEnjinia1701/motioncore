@@ -1,0 +1,17 @@
+# Card metadata consumed by https://designmolecule.com
+name: MotionCore
+slug: motioncore
+area: Shared Components
+status: concept          # concept | design | prototype | tested | released
+shortlisted: false
+pitch: >-
+  A standard motor, controller and safety module (hub or mid-drive motor, open controller, e-stop, speed limit and brake interlock) that the lab's mobility and automation designs bolt on rather than re-engineer.
+problem: >-
+  Each vehicle or machine concept re-specifies the same drive train and safety logic, and small teams rarely have time to get the emergency stop, speed limit and brake interlock right.
+budget_usd: 300
+difficulty: 4  # 1 easiest, 5 hardest
+hero_image: media/hero.png
+licenses:
+  hardware: CERN-OHL-S-2.0
+  software: MIT
+tags: [shared-components, open-hardware, cern-ohl-s]
