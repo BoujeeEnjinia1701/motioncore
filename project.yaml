@@ -2,7 +2,12 @@
 name: MotionCore
 slug: motioncore
 area: Shared Components
-status: concept          # concept | design | prototype | tested | released
+trl: 2                   # Technology Readiness Level, see .kit/STANDARDS.md section 9
+trl_target: 3
+trl_evidence:
+  - docs/01-problem.md
+  - docs/02-concept.md
+  - docs/03-requirements.md
 shortlisted: false
 pitch: >-
   A standard motor, controller and safety module (hub or mid-drive motor, open controller, e-stop, speed limit and brake interlock) that the lab's mobility and automation designs bolt on rather than re-engineer.
