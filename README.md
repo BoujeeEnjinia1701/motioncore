@@ -6,13 +6,21 @@
 
 A standard motor, controller and safety module (hub or mid-drive motor, open controller, e-stop, speed limit and brake interlock) that the lab's mobility and automation designs bolt on rather than re-engineer.
 
+![MotionCore concept](media/hero.png)
+
+[Interactive 3D model](media/viewer.html) · [Concept blueprint (PDF)](media/concept-blueprint.pdf) · [Review note](docs/REVIEW.md)
+
 ## Concept rationale
 
-Standardizing the drive and safety chain lets the lab spend design effort on what is different about each vehicle, while every project inherits a reviewed safety function.
+Standardizing the drive and safety chain lets the lab spend design effort on what is different about each vehicle, while every project inherits a reviewed safety function. MotionCore pairs an open VESC-class controller with a small independent supervisor and a DC contactor: the controller does the motor control it is already good at, and the supervisor and a hardwired emergency stop loop provide the second channel that low-cost controllers lack.
+
+Keeping it open and garage-buildable matters because the people most likely to build small electric machines are makers, students and small workshops. Every part is sold off the shelf, the safety loop can be checked with a multimeter, and the interface is documented so that a host project, or anyone else, can reuse the module without closed tools.
 
 ## Burning platform
 
-Light electric vehicles and small automation are growing fastest where formal engineering support is thinnest, and unsafe DIY drive systems cause avoidable injuries.
+Light electric vehicles and small machines are spreading faster than the engineering support behind them. Almost 10 million electric two-wheelers were sold worldwide in 2025, about 14 % of all two-wheeler sales ([IEA Global EV Outlook 2026](https://www.iea.org/reports/global-ev-outlook-2026/trends-in-other-ev-modes)). In the United States, the Consumer Product Safety Commission estimates about 698,500 emergency department visits linked to micromobility products from 2017 through 2024 and records 533 deaths ([CPSC](https://www.cpsc.gov/s3fs-public/Micromobility_Products-Related_Deaths_Injuries_and_Hazard_Patterns_2017-2024.pdf)); most are crashes, which show how many people now ride and work beside small electric drives.
+
+In workplaces, moving vehicles and machinery remain leading causes of death. In Great Britain, 24 of the 126 workers killed in 2025/26 were struck by a moving vehicle and 10 died in contact with moving machinery (provisional figures, [HSE](https://www.hse.gov.uk/STATISTICS/fatals-overview.htm)). An emergency stop that works without software, a speed limit that does not depend on one controller and a drive that never restarts by itself are basic protections, yet small builds often skip them.
 
 ## Where it could be used
 
@@ -20,17 +28,27 @@ Light electric vehicles and small automation are growing fastest where formal en
 
 | Industry | Use |
 | --- | --- |
-| _To be developed_ | |
+| Warehousing and logistics | Drive and stop chain for powered pallet jacks, carts and tugs at walking pace (as in PalletPilot) |
+| Last-mile delivery | Assist drives for cargo trailers, cargo bikes and stair-climbing hand trucks (CargoMule, StepClimber) |
+| Agriculture | Small electric field carts, orchard platforms and barrows with a reliable stop |
+| Solar operations and maintenance | Panel-cleaning robots and equipment carts on solar farms |
+| Education and makerspaces | Teaching safe drive design with an open, inspectable safety loop |
+| Rural transport | Bicycle conversion kits and shared-pack vehicles (SunSpoke with SwapCell) |
 
 ### By country or region
 
 | Country or region | Why it matters there |
 | --- | --- |
-| _To be developed_ | |
+| United States | Micromobility injuries are tracked closely and rising; CPSC records 310 e-bike deaths from 2017 through 2024 ([CPSC](https://www.cpsc.gov/s3fs-public/Micromobility_Products-Related_Deaths_Injuries_and_Hazard_Patterns_2017-2024.pdf)) |
+| European Union | Pedal-assist up to 250 W with a 25 km/h cutoff is excluded from type approval ([Regulation (EU) No 168/2013](https://eur-lex.europa.eu/legal-content/EN/TXT/PDF/?uri=CELEX%3A32013R0168)), so an independent speed limit matters for small builders |
+| China | More than 7 million electric two-wheelers sold in 2025, over 55 % of the market ([IEA](https://www.iea.org/reports/global-ev-outlook-2026/trends-in-other-ev-modes)) |
+| India | Almost 800,000 electric three-wheelers sold in 2025, almost 70 % of three-wheeler sales, many built and serviced by small workshops ([IEA](https://www.iea.org/reports/global-ev-outlook-2026/trends-in-other-ev-modes)) |
+| Vietnam | About 735,000 electric two-wheelers sold in 2025, more than 20 % of the market ([IEA](https://www.iea.org/reports/global-ev-outlook-2026/trends-in-other-ev-modes)) |
+| Kenya | About 7 % of new motorcycle registrations in 2024 were electric, 4,862 of 68,804, per KNBS figures reported by [CleanTechnica](https://cleantechnica.com/2025/05/23/7-of-all-new-motorcycle-registrations-in-kenya-in-2024-were-electric/); local assembly and conversion are growing |
 
 ## What sparked the idea
 
-It came out of a September 2026 review of Design Molecule's applied research areas against the open projects already in the lab. CargoMule, PalletPilot, StepClimber, SunSpoke and DustRunner each describe their own motor and safety logic.
+It came out of a September 2026 review of Design Molecule's applied research areas against the open projects already in the lab. CargoMule, PalletPilot, StepClimber, SunSpoke and DustRunner each describe their own motor and safety logic. The real-world trigger was the pace of small electric vehicle adoption: the IEA counts almost 10 million electric two-wheelers sold in 2025 ([IEA](https://www.iea.org/reports/global-ev-outlook-2026/trends-in-other-ev-modes)), and many conversions and small machines are now built outside any engineering team.
 
 ## Problem
 
@@ -40,23 +58,26 @@ Each vehicle or machine concept re-specifies the same drive train and safety log
 
 A standard motor, controller and safety module (hub or mid-drive motor, open controller, e-stop, speed limit and brake interlock) that the lab's mobility and automation designs bolt on rather than re-engineer.
 
+A finned module, about 250 x 170 x 66 mm, holds an open VESC-class controller, a safety supervisor, a DC contactor and a precharge and fuse block. The emergency stop opens the contactor through a hardwired loop that works without any firmware, the speed limit is checked twice (controller and supervisor, each with its own speed signal), and the drive never restarts until the operator resets it. It runs from 24, 36 or 48 V packs, including SwapCell. First-order estimates give 250 W continuous at 40 °C ambient with about 55 °C on the case, and a reference kit cost of about $325, over the $300 budget. The 500 W heavy case runs too hot on paper. All figures are estimates, not measurements.
+
 Full design precis: [docs/02-concept.md](docs/02-concept.md)
 
 ## Key components
 
-- 250 to 500 W brushless motor
-- Open-source motor controller (VESC class)
-- Hardwired emergency stop and contactor
+- Reference 250 W geared hub motor (hosts may fit other motors up to 500 W)
+- Open-source motor controller (VESC class, 20 to 58 V input)
+- Safety supervisor board with its own speed sensor
+- Hardwired twin-channel emergency stop and DC contactor, with precharge and main fuse
 - Brake interlock switches
-- Throttle or command input board
-- Heat sink enclosure
+- Key switch and throttle pod (command input; CAN for host computers)
+- Finned aluminum enclosure that doubles as the heat sink
 - Wiring harness with keyed connectors
 
 The working bill of materials is in [bom/bom.csv](bom/bom.csv).
 
 ## Safety
 
-> Moving machinery and stored electrical energy: guard all rotating parts, test the emergency stop before every run and limit speed during development. Lithium cells can overheat, vent and burn. Use protected cells or LiFePO4, fuse every pack, charge only within the cell maker's limits and never leave a first build charging unattended.
+> Moving machinery and stored electrical energy: guard all rotating parts, test the emergency stop before every run and limit speed during development, with the wheel off the ground for first runs. The safety functions are unverified paper designs until tested. A category 0 stop removes drive power but does not brake, so every host needs brakes that work unpowered. Never bridge the safety loop. Bus capacitors hold charge after disconnection, and the enclosure can run hot. Lithium cells can overheat, vent and burn. Use protected cells or LiFePO4, fuse every pack, charge only within the cell maker's limits and never leave a first build charging unattended. MotionCore is a research prototype, not certified to any machinery or vehicle standard. See [docs/02-concept.md](docs/02-concept.md#safety).
 
 ## Repository layout
 

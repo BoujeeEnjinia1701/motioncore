@@ -1,8 +1,15 @@
 item,qty,spec,supplier,unit_cost_usd,make_buy,notes
-250 to 500 W brushless motor,,,,,,
-Open-source motor controller (VESC class),,,,,,
-Hardwired emergency stop and contactor,,,,,,
-Brake interlock switches,,,,,,
-Throttle or command input board,,,,,,
-Heat sink enclosure,,,,,,
-Wiring harness with keyed connectors,,,,,,
+1 Reference hub motor,1,"250 W geared brushless hub motor, 36 or 48 V winding, Hall sensors and temperature sensor, 9-pin waterproof plug",E-bike motor distributor,70.00,buy,Indicative price; reference only; hosts may substitute a motor within R2
+2 Motor controller,1,"VESC-class controller, 75 V MOSFET stage, 50 A continuous phase current class, CAN, open firmware (GPL-3.0)",VESC hardware vendor,85.00,buy,Indicative price; mounted to the enclosure floor with a thermal pad
+3 Safety supervisor board,1,"Small microcontroller board with CAN transceiver, isolated speed input, throttle and brake inputs, MOSFET enable switch for contactor coil, USB fault log",Electronics distributor plus small-run PCB,22.00,make,Indicative price; MIT firmware sketch only at TRL 3
+4 Main DC contactor,1,"Sealed DC contactor, 60 V class, 100 A continuous, 12 to 24 V coil with Zener suppressor, rated for DC breaking at full pack voltage",Industrial or EV parts supplier,25.00,buy,Indicative price; DC breaking rating to confirm at TRL 3
+5 Precharge and main fuse block,1,"100 ohm 10 W precharge resistor with bypass, sealed fuse holder, 20 A or 40 A fuse per host",Electronics distributor,12.00,buy,Indicative price
+6 Enclosure body,1,"Extruded aluminum box with side fins, about 220 x 140 x 60 mm body",Enclosure supplier,22.00,buy,Indicative price; doubles as the controller heat sink
+7 Enclosure lid,1,"Aluminum lid with gasket and stainless screws",Enclosure supplier,6.00,buy,Indicative price
+8 Connector panel,1,"Panel-mount XT90 anti-spark socket, motor plug socket, two keyed M12 sockets (safety loop and command), vent plug",Connector distributor,18.00,buy,Indicative price; keying proposed awaiting Amish
+9 E-stop station,1,"22 mm red mushroom-head pushbutton on yellow enclosure, twist release, two normally closed contact blocks",Industrial controls supplier,15.00,buy,Indicative price
+10 Brake interlock switches,2,"Normally closed lever or pedal switches, sealed, with keyed leads",E-bike parts supplier,4.00,buy,Indicative price per switch
+11 Key switch and throttle pod,1,"Two-position key switch (enable and reset) and hall-effect thumb throttle in one pod",E-bike or industrial parts supplier,12.00,buy,Indicative price
+12 Independent speed sensor,1,"Eight-magnet ring and sealed Hall pickup with lead",E-bike parts supplier,6.00,buy,Indicative price; read only by the supervisor
+13 Wiring harness,1,"Pre-made leads with keyed waterproof connectors, 2.5 mm2 power, shielded signal pairs, spiral wrap",Connector distributor,18.00,make,Indicative price
+14 Hardware and consumables,1,"Standoffs, screws, thermal pad, cable ties, labels",Local hardware shop,6.00,buy,Indicative price; no exploded-view callout
