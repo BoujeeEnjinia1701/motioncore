@@ -44,7 +44,7 @@ In workplaces, moving vehicles and machinery remain leading causes of death. In 
 | China | More than 7 million electric two-wheelers sold in 2025, over 55 % of the market ([IEA](https://www.iea.org/reports/global-ev-outlook-2026/trends-in-other-ev-modes)) |
 | India | Almost 800,000 electric three-wheelers sold in 2025, almost 70 % of three-wheeler sales, many built and serviced by small workshops ([IEA](https://www.iea.org/reports/global-ev-outlook-2026/trends-in-other-ev-modes)) |
 | Vietnam | About 735,000 electric two-wheelers sold in 2025, more than 20 % of the market ([IEA](https://www.iea.org/reports/global-ev-outlook-2026/trends-in-other-ev-modes)) |
-| Kenya | About 7 % of new motorcycle registrations in 2024 were electric, 4,862 of 68,804, per KNBS figures reported by [CleanTechnica](https://cleantechnica.com/2025/05/23/7-of-all-new-motorcycle-registrations-in-kenya-in-2024-were-electric/); local assembly and conversion are growing |
+| Kenya | Electric two-wheeler sales more than tripled in 2025 to over 25,000, around 15 % of new two-wheeler registrations, driven by motorcycle taxi riders ([IEA](https://www.iea.org/reports/global-ev-outlook-2026/trends-in-other-ev-modes)) |
 
 ## What sparked the idea
 
@@ -98,6 +98,12 @@ The priced bill of materials is in [bom/bom.csv](bom/bom.csv); the parametric mo
 ## Documentation
 
 Controlled documents follow the portfolio [documentation standard](.kit/STANDARDS.md). Each carries a document ID (MTC-PRC-001 for the precis), a version and a revision history. Branded PDFs are built with `python .kit/render.py` and attached to GitHub Releases when a document is tagged, for example `MTC-PRC-001/v1.0`.
+
+## Credits
+
+Designed by Amish Chadha. See [CONTRIBUTORS.md](CONTRIBUTORS.md) for roles. To cite this design, use [CITATION.cff](CITATION.cff) (GitHub shows it as "Cite this repository").
+
+AI assistance (Claude) was used to accelerate concept renders, prototype documentation and first-pass sizing calculations. Design direction and all decisions are Amish Chadha's, recorded in this repository's decision records (`docs/decisions/`).
 
 ## Licenses
 

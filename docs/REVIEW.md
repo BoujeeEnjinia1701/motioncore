@@ -211,3 +211,11 @@ Update, 2026-09-25: all eleven items below are decided by Amish, 2026-09-25: go 
 ### Recommended next step
 
 Review this note and the media, then decide items 1, 2 and 7. If approved, run `/advance-trl3` to check the e-stop timing, precharge, thermal and fuse estimates by calculation, choose the contactor and controller parts, freeze interface v0.1 and produce the parametric model and drawing sheet.
+
+## Session 2026-09-26: sources strengthened
+
+| README item | Old source | New source |
+| --- | --- | --- |
+| Kenya row (By country or region) | CleanTechnica, 2025, reporting KNBS 2024 registrations (trade press, standing alone) | [IEA Global EV Outlook 2026, trends in other EV modes](https://www.iea.org/reports/global-ev-outlook-2026/trends-in-other-ev-modes): electric two-wheeler sales more than tripled in 2025 to over 25,000, around 15 % of new registrations |
+
+All other links in the four sourced README sections (IEA, CPSC micromobility report, HSE fatal injury statistics, Regulation (EU) No 168/2013, CPSC 2006 Segway recall) were fetched and confirmed on 2026-09-26. `docs/01-problem.md` did not cite the replaced source, so no controlled document changed.
