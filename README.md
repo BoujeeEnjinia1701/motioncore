@@ -1,14 +1,14 @@
 # MotionCore
 
-![TRL 2](https://img.shields.io/badge/TRL-2%20of%209-0F766E) ![Hardware: CERN-OHL-S-2.0](https://img.shields.io/badge/hardware-CERN--OHL--S--2.0-111827) ![Software: MIT](https://img.shields.io/badge/software-MIT-111827)
+![TRL 3](https://img.shields.io/badge/TRL-3%20of%209-0F766E) ![Hardware: CERN-OHL-S-2.0](https://img.shields.io/badge/hardware-CERN--OHL--S--2.0-111827) ![Software: MIT](https://img.shields.io/badge/software-MIT-111827)
 
-**Area:** Shared Components · **TRL:** 2 of 9 (concept formulated) · **Prototype budget:** about $300 USD · **Difficulty:** 4 of 5
+**Area:** Shared Components · **TRL:** 3 of 9 (proof of concept on paper) · **Prototype budget:** about $300 USD · **Difficulty:** 4 of 5
 
-A standard motor, controller and safety module (hub or mid-drive motor, open controller, e-stop, speed limit and brake interlock) that the lab's mobility and automation designs bolt on rather than re-engineer.
+A standard controller and safety module (open motor controller, e-stop, speed limit and brake interlock) with a named reference hub motor, which the lab's mobility and automation designs bolt on rather than re-engineer.
 
 ![MotionCore concept](media/hero.png)
 
-[Interactive 3D model](media/viewer.html) · [Concept blueprint (PDF)](media/concept-blueprint.pdf) · [Review note](docs/REVIEW.md)
+[Interactive 3D model](media/viewer.html) · [Concept blueprint (PDF)](media/concept-blueprint.pdf) · [General arrangement MTC-DWG-001 (PDF)](cad/drawings/MTC-DWG-001.pdf) · [Sizing note MTC-CAL-001](docs/04-calcs/01-sizing.md) · [Review note](docs/REVIEW.md)
 
 ## Concept rationale
 
@@ -56,28 +56,30 @@ Each vehicle or machine concept re-specifies the same drive train and safety log
 
 ## Concept
 
-A standard motor, controller and safety module (hub or mid-drive motor, open controller, e-stop, speed limit and brake interlock) that the lab's mobility and automation designs bolt on rather than re-engineer.
+A standard controller and safety module (open motor controller, e-stop, speed limit and brake interlock) with a named reference hub motor, which the lab's mobility and automation designs bolt on rather than re-engineer.
 
-A finned module, about 250 x 170 x 66 mm, holds an open VESC-class controller, a safety supervisor, a DC contactor and a precharge and fuse block. The emergency stop opens the contactor through a hardwired loop that works without any firmware, the speed limit is checked twice (controller and supervisor, each with its own speed signal), and the drive never restarts until the operator resets it. It runs from 24, 36 or 48 V packs, including SwapCell. First-order estimates give 250 W continuous at 40 °C ambient with about 55 °C on the case, and a reference kit cost of about $325, over the $300 budget. The 500 W heavy case runs too hot on paper. All figures are estimates, not measurements.
+A finned module, 243 x 168 x 66 mm, holds an open VESC-class controller, a safety supervisor, a DC contactor and a precharge and fuse block. The emergency stop opens the contactor through a hardwired loop that works without any firmware, the speed limit is checked twice (controller and supervisor, each with its own speed signal), and the drive never restarts until the operator resets it. It runs from 24, 36 or 48 V packs, including SwapCell, and reads SwapCell or CellGuard faults over CAN.
+
+The TRL 3 sizing note (MTC-CAL-001) gives, on paper: 250 W continuous at 40 °C ambient with about 50 °C on the case; 350 W on 24 V packs at about 58.5 °C, close to the 60 °C limit (at risk); motor power removed within 67 ms of an e-stop in the worst case; and a MotionCore kit cost of $265 against the $300 budget, with the $70 reference motor costed to each host. The module weighs about 1.94 kg, over its 1.5 kg target. All figures are estimates, not measurements.
 
 Full design precis: [docs/02-concept.md](docs/02-concept.md)
 
 ## Key components
 
-- Reference 250 W geared hub motor (hosts may fit other motors up to 500 W)
+- Reference 250 W geared hub motor, named in the interface and costed to each host (hosts may fit another motor within the rating)
 - Open-source motor controller (VESC class, 20 to 58 V input)
 - Safety supervisor board with its own speed sensor
 - Hardwired twin-channel emergency stop and DC contactor, with precharge and main fuse
 - Brake interlock switches
 - Key switch and throttle pod (command input; CAN for host computers)
-- Finned aluminum enclosure that doubles as the heat sink
+- Finned aluminum enclosure that doubles as the heat sink, on four M6 mounts
 - Wiring harness with keyed connectors
 
-The working bill of materials is in [bom/bom.csv](bom/bom.csv).
+The priced bill of materials is in [bom/bom.csv](bom/bom.csv); the parametric model is `cad/src/model.py`, with STEP and STL exports in `cad/step/` and `cad/stl/`.
 
 ## Safety
 
-> Moving machinery and stored electrical energy: guard all rotating parts, test the emergency stop before every run and limit speed during development, with the wheel off the ground for first runs. The safety functions are unverified paper designs until tested. A category 0 stop removes drive power but does not brake, so every host needs brakes that work unpowered. Never bridge the safety loop. Bus capacitors hold charge after disconnection, and the enclosure can run hot. Lithium cells can overheat, vent and burn. Use protected cells or LiFePO4, fuse every pack, charge only within the cell maker's limits and never leave a first build charging unattended. MotionCore is a research prototype, not certified to any machinery or vehicle standard. See [docs/02-concept.md](docs/02-concept.md#safety).
+> Moving machinery and stored electrical energy: guard all rotating parts, test the emergency stop before every run and limit speed during development, with the wheel off the ground for first runs. The safety functions are unverified paper designs until tested. A category 0 stop removes drive power but does not brake, so every host needs brakes that work unpowered. Never bridge the safety loop. Bus capacitors hold charge after disconnection, and the enclosure can reach about 60 °C, more in direct sun. The main fuse must be rated for the full DC pack voltage. Lithium cells can overheat, vent and burn. Use protected cells or LiFePO4, fuse every pack, charge only within the cell maker's limits and never leave a first build charging unattended. MotionCore is a research prototype, not certified to any machinery or vehicle standard. See [docs/02-concept.md](docs/02-concept.md#safety).
 
 ## Repository layout
 

@@ -2,15 +2,28 @@
 name: MotionCore
 slug: motioncore
 area: Shared Components
-trl: 2                   # Technology Readiness Level, see .kit/STANDARDS.md section 9
+trl: 3                   # Technology Readiness Level, see .kit/STANDARDS.md section 9
 trl_target: 3
 trl_evidence:
   - docs/01-problem.md
   - docs/02-concept.md
   - docs/03-requirements.md
+  - docs/decisions/0001-trl2-review-decisions.md
+  - docs/04-calcs/01-sizing.md
+  - docs/04-calcs/sizing.py
+  - docs/04-calcs/results.csv
+  - cad/src/model.py
+  - cad/src/sheets.py
+  - cad/step/motioncore-module.step
+  - cad/step/motioncore-kit.step
+  - cad/stl/motioncore-module.stl
+  - cad/drawings/MTC-DWG-001.svg
+  - cad/drawings/MTC-DWG-001.pdf
+  - bom/bom.csv
+  - bom/bom-notes.md
 shortlisted: false
 pitch: >-
-  A standard motor, controller and safety module (hub or mid-drive motor, open controller, e-stop, speed limit and brake interlock) that the lab's mobility and automation designs bolt on rather than re-engineer.
+  A standard controller and safety module (open motor controller, e-stop, speed limit and brake interlock) with a named reference hub motor, which the lab's mobility and automation designs bolt on rather than re-engineer.
 problem: >-
   Each vehicle or machine concept re-specifies the same drive train and safety logic, and small teams rarely have time to get the emergency stop, speed limit and brake interlock right.
 budget_usd: 300

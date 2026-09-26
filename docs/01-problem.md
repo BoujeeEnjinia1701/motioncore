@@ -3,7 +3,7 @@ doc_id: MTC-PRB-001
 title: MotionCore problem statement
 project: MotionCore
 doc_type: Problem statement
-version: "0.2"
+version: "0.3"
 status: Draft
 date: '2026-09-25'
 author: Amish Chadha
@@ -17,11 +17,15 @@ revisions:
   date: '2026-09-25'
   author: Amish Chadha
   change: Populate to TRL 2 (problem, users, host projects, context, constraints, prior work, open questions)
+- version: "0.3"
+  date: '2026-09-25'
+  author: Amish Chadha
+  change: TRL 3. Budget scope (motor costed to hosts), SwapCell and CellGuard links, first host and input range adopted for TRL 3 pending Amish's review (MTC-DDR-001); CargoMule pack corrected to 12S LiFePO4
 ---
 
 # MotionCore problem statement
 
-Each vehicle or machine concept in the lab re-specifies the same drive train and safety logic, and small teams rarely have time to get the emergency stop, speed limit and brake interlock right. MotionCore is a shared motor, controller and safety module with one documented interface, so that each host design inherits a reviewed safety chain instead of inventing its own.
+Each vehicle or machine concept in the lab re-specifies the same drive train and safety logic, and small teams rarely have time to get the emergency stop, speed limit and brake interlock right. MotionCore is a shared controller and safety module, with a named reference hub motor and one documented interface, so that each host design inherits a reviewed safety chain instead of inventing its own.
 
 ## The problem
 
@@ -43,17 +47,17 @@ Five existing lab designs drive a motor from a lithium pack: CargoMule (a 36 V, 
 
 ### Host projects (first-order envelope)
 
-Table 1 lists the drive needs stated in the host READMEs. MotionCore is sized to cover the first four; DustRunner's 12.8 V system falls outside the proposed input range.
+Table 1 lists the drive needs stated in the host READMEs. MotionCore is sized to cover the first four; DustRunner's 12.8 V system falls outside the 20 to 58 V input range.
 
 *Table 1. Drive needs of existing lab host designs.*
 
 | Host | Pack | Motor | Stop and brake need |
 | --- | --- | --- | --- |
 | SunSpoke | 48 V SwapCell (about 46.8 V nominal, 54.6 V full) | 250 W geared front hub | Brake cut-off on both levers; pedelec speed cutoff |
-| CargoMule | 36 V class LiFePO4, 384 Wh | 250 W geared hub, 20 in wheel | Drive cut when the drawbar goes into compression; overrun brakes |
+| CargoMule | 12S LiFePO4 (38.4 V nominal), 384 Wh | 250 W geared hub, 20 in wheel | Drive cut when the drawbar goes into compression; overrun brakes |
 | PalletPilot | 25.6 V LiFePO4, 20 Ah | Two 24 V hub motors with spring-applied brakes | Two hardwired e-stops, safety relay, walking-pace limit |
 | StepClimber | 24 V LiFePO4, 10 Ah | 24 V worm gearmotor with spring-applied brake | Stop on tilt; brake holds on stairs |
-| DustRunner | 12.8 V LiFePO4 | Two small drive gearmotors | Out of the proposed range |
+| DustRunner | 12.8 V LiFePO4 | Two small drive gearmotors | Out of the 20 to 58 V range |
 
 ### Operating environment
 
@@ -64,11 +68,11 @@ Table 1 lists the drive needs stated in the host READMEs. MotionCore is sized to
 
 ## Constraints
 
-- Garage-buildable prototype, about $300 USD for the reference kit.
+- Garage-buildable prototype, $300 or less for the MotionCore kit (module and devices); the reference motor is costed to each host (MTC-DDR-001 item 1).
 - Off-the-shelf, openly documented parts: a VESC-class controller ([VESC project](https://vesc-project.com/)), a DC contactor, standard fuses and industrial pushbuttons.
 - The emergency stop must work without any firmware: a hardwired loop that opens the main contactor.
 - One connector set shared by all hosts; keyed so that the safety loop and the command lines cannot be swapped.
-- Compatible with the SwapCell interface and the CellGuard BMS where a host uses them (proposed, awaiting Amish).
+- Compatible with SwapCell interface v0.3 (the supervisor acts as the vehicle host) and the CellGuard BMS where a host uses them (adopted for TRL 3 pending Amish's review, MTC-DDR-001 items 7 and 8).
 - Research prototype only. MotionCore does not make a host compliant with any machinery, vehicle or pedelec regulation; each host remains responsible for its own risk assessment.
 
 ## Out of scope
@@ -89,11 +93,11 @@ Table 1 lists the drive needs stated in the host READMEs. MotionCore is sized to
 
 ## Open questions
 
-- Which hosts adopt MotionCore first, and do their leads agree to swap their current drive sections for it? Proposed, awaiting Amish.
-- Should the module act as the SwapCell charge and discharge host (sending the heartbeat) so that hosts need no separate host adapter?
-- Is a stop category 1 option (controlled regenerative stop, then contactor open) worth the added complexity for heavier hosts?
-- Can StepClimber's brushed worm gearmotor run from the VESC DC motor mode, or does it need a different power stage?
-- Is 20 to 58 V the right input range, or should a 12 V variant cover DustRunner?
+At TRL 3 the recommendations on first host, SwapCell heartbeat, stop category and input range were adopted for TRL 3 under Amish's 2026-09-25 instruction, open for his review (MTC-DDR-001): CargoMule is the proposed first adopter, subject to its project's agreement; the supervisor sends the SwapCell heartbeat; category 0 is the default with category 1 as a per-host option; and the range stays 20 to 58 V, so DustRunner stays out of scope. Still open:
+
+- Do the host leads agree to swap their current drive sections for MotionCore, starting with CargoMule?
+- Can StepClimber's brushed worm gearmotor run from the VESC DC motor mode, or does it need a different power stage? Proposed, awaiting Amish.
+- Should a dual-motor host such as PalletPilot use two controllers on one supervisor, or two modules? Proposed, awaiting Amish.
 
 ## User research and co-design
 
