@@ -1,4 +1,4 @@
-"""MotionCore sizing calculations, MTC-CAL-001 v0.1 (TRL 3).
+"""MotionCore sizing calculations, MTC-CAL-001 v0.2 (TRL 3, MTC-DDR-002).
 
 Run from the repo root:  python docs/04-calcs/sizing.py
 Prints every number quoted in docs/04-calcs/01-sizing.md and writes docs/04-calcs/results.csv.
@@ -21,7 +21,9 @@ PACKS = {
     "cargomule": ("CargoMule 12S LiFePO4", 38.4, 30.0, 43.8, 0.060, 15.0),
     "lfp8s": ("8S LiFePO4 (PalletPilot, StepClimber class)", 25.6, 20.0, 29.2, 0.030, None),
 }
-V_RANGE = (20.0, 58.0)              # R1
+V_RANGE = (20.0, 60.0)              # R1, upper bound raised from 58 V (MTC-DDR-002)
+CELLGUARD_16S_MAX = 58.4            # V, CellGuard 16S LiFePO4 full charge (16 x 3.65 V)
+M_LIMIT = 2.0                       # kg, R12 module mass, relaxed from 1.5 kg (MTC-DDR-002)
 V_TRANSIENT = 75.0                  # R1 withstand, controller MOSFET class
 ETA_MOTOR = 0.80                    # geared hub at rated load
 ETA_MOTOR_PEAK = 0.75               # at 3x rated torque, 10 s
@@ -51,11 +53,11 @@ T_BOUNCE = 10e-3                    # s, first opening of the NC contact block p
 L_COIL = 0.30                       # H, assumed coil inductance
 R_COIL = V_COIL ** 2 / P_COIL       # ohm
 I_DROP_FRAC = 0.10                  # release at 10 % of nominal coil current
-T_MECH, T_ARC = 10e-3, 5e-3         # s, armature travel and contact opening; arc at up to 58 V DC
+T_MECH, T_ARC = 10e-3, 5e-3         # s, armature travel and contact opening; arc at up to 60 V DC
 T_RELEASE_SPEC = 50e-3              # s, maximum release time the contactor must meet with its suppressor
 V_ZENER, V_DIODE = 24.0, 0.8
 V_UV = 18.0                         # V, controller undervoltage cut-off, 8S setting
-V_OV = 60.0                         # V, controller overvoltage fault setting
+V_OV = 66.0                         # V, controller overvoltage fault setting (60 V before MTC-DDR-002)
 # Precharge
 C_BUS = 1000e-6                     # F, controller bus capacitance (to confirm from the chosen part)
 R_PRE = 100.0                       # ohm, 10 W aluminum-clad wirewound
@@ -137,7 +139,7 @@ def surface_temp(q, sun=0.0):
                 "h_t": h_t, "h_r": h_r, "UA": out / dt if dt else 0}
 
 
-print("MotionCore sizing, MTC-CAL-001 v0.1\n")
+print("MotionCore sizing, MTC-CAL-001 v0.2\n")
 
 # ---------------------------------------------------------------- 2. Operating points and currents (R1, R2)
 print("2. Operating points")
@@ -176,9 +178,11 @@ print(f"  Flow at the reference point: pack {ref_a['p_in']:.0f} W; aux and path 
 sag_ref = ref_a["i"] * PACKS["swapcell"][4]
 print(f"  Voltage sag at the reference point: {sag_ref:.2f} V (pack resistance only)")
 
-res("R1", f"20 to 58 V covered by a 75 V controller and an 18 to 75 V aux buck; SwapCell 39.0 to 54.6 V, "
-          f"CargoMule 30.0 to 43.8 V, 8S LFP 20.0 to 29.2 V inside the range",
-    "20 to 58 V DC; 75 V transient", "Met (design review)")
+print(f"  R1 range {V_RANGE[0]:.0f} to {V_RANGE[1]:.0f} V: CellGuard 16S LiFePO4 full at {CELLGUARD_16S_MAX} V, "
+      f"{V_RANGE[1] - CELLGUARD_16S_MAX:.1f} V below the upper bound")
+res("R1", f"20 to 60 V covered by a 75 V controller and an 18 to 75 V aux buck; SwapCell 39.0 to 54.6 V, "
+          f"CargoMule 30.0 to 43.8 V, 8S LFP 20.0 to 29.2 V and CellGuard 16S LFP up to {CELLGUARD_16S_MAX} V inside the range",
+    "20 to 60 V DC; 75 V transient", "Met (design review)")
 
 # ---------------------------------------------------------------- 3. Fuses, contactor, leads
 print("\n3. Fuses, contactor and leads")
@@ -294,6 +298,8 @@ for pk in PACKS:
     print(f"  {label}: peak {vmax / R_PRE:.2f} A, residual {dv:.3f} V at close, closure inrush {dv / r_loop:.1f} A")
 e_pre = 0.5 * C_BUS * 54.6 ** 2
 p_fault = 54.6 ** 2 / R_PRE
+print(f"  At the R1 upper bound ({V_RANGE[1]:.0f} V): peak {V_RANGE[1] / R_PRE:.2f} A, residual "
+      f"{V_RANGE[1] * math.exp(-N_TAU_CLOSE):.3f} V at close")
 print(f"  tau {1000 * tau_p:.0f} ms; contactor closes at {t_close:.1f} s; resistor energy {e_pre:.2f} J per start;"
       f" into a shorted bus {p_fault:.0f} W, so a 1 s timeout limits it to {p_fault:.0f} J")
 pmax = max(x[1] for x in pre); imax = max(x[3] for x in pre)
@@ -343,6 +349,8 @@ v_after = math.sqrt(V_OV ** 2 + 2 * e_ind / C_BUS)
 print(f"  Regeneration at 10 A into a full SwapCell: {v_regen:.1f} V at the terminals")
 print(f"  Regeneration with the contactor open: bus rises {dvdt:.0f} V/ms; with the controller's {V_OV:.0f} V fault the"
       f" phase inductance adds {e_ind:.2f} J, bus peaks near {v_after:.1f} V (limit {V_TRANSIENT:.0f} V)")
+print(f"  Overvoltage fault {V_OV:.0f} V leaves {V_OV - CELLGUARD_16S_MAX:.1f} V above a full CellGuard 16S pack "
+      f"and {V_OV - V_RANGE[1]:.0f} V above the R1 upper bound")
 print(f"  Direct-drive motors: back-EMF stays under {V_TRANSIENT:.0f} V up to {V_TRANSIENT / V_RANGE[1]:.2f} x the "
       f"no-load speed at {V_RANGE[1]:.0f} V")
 
@@ -368,8 +376,9 @@ for t_try in (2.0,):
     lid2 = L * W * 2.0 + 2 * ((L - 2 * t_try - 2) + (W - 2 * t_try - 2)) * 2 * 3
     m2 = (sh2 + fn2 + bosses + lid2) * RHO_AL + sum(M_PARTS.values())
     print(f"  With 2 mm walls and lid and 3 mm fins: module {m2:.2f} kg")
-res("R12", f"{env[0]:.0f} x {env[1]:.0f} x {env[2]:.0f} mm; {m_mod:.2f} kg", "250 x 170 x 70 mm; 1.5 kg",
-    "Not met")
+res("R12", f"{env[0]:.0f} x {env[1]:.0f} x {env[2]:.0f} mm; {m_mod:.2f} kg", f"250 x 170 x 70 mm; {M_LIMIT:.1f} kg",
+    "Met" if m_mod <= M_LIMIT else "Not met")
+print(f"  R12 mass limit {M_LIMIT:.1f} kg: margin {M_LIMIT - m_mod:.2f} kg")
 
 # ---------------------------------------------------------------- 10. Cost (R14)
 print("\n10. Cost")
@@ -387,9 +396,10 @@ res("R14", f"${kit:.0f} for items 2 to 14 (reference motor ${motor:.0f}, costed 
     "MotionCore kit $300 or less", "Met (indicative prices)")
 
 # Requirements checked by review only
-res("R10", "XT90 power socket is not sealed; M12 and motor plug are IP65 or better when mated; vibration not analyzed",
+res("R10", "XT90 power socket is not sealed; a sealed power connector is to be evaluated before interface v0.1 is frozen "
+           "(MTC-DDR-002); M12 and motor plug are IP65 or better when mated; vibration not analyzed",
     "IP65 mated; survive road and stair vibration", "At risk")
-res("R11", "Interface v0.1 adopted: XT90, 9-pin motor plug, M12 A-coded safety loop, M12 B-coded command; "
+res("R11", "Interface v0.1 adopted: XT90 (provisional), 9-pin motor plug, M12 A-coded safety loop, M12 B-coded command; "
            "fit time needs a timed fit", "One keyed connector set; fit in 2 h", "Not verifiable at TRL 3")
 res("R13", "Supervisor firmware MIT on its own processor; VESC firmware unmodified GPL-3.0 on the controller; "
            "CAN link only; formal license review open", "Open hardware and firmware", "Met (design review)")

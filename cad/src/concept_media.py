@@ -32,12 +32,12 @@ phone = box(-60, 15, -250, -175, 0, 9)
 context = [Part("Bench top", bench, "#C8CDD3"), Part("phone", phone, "#6B7280")]
 
 render_all(
-    parts, project="MotionCore", title="Drive and safety module concept", dwg_no="MTC-DWG-010", date="2026-09-25", rev="P2",
-    key_figures=["Input 20 to 58 V DC: 24, 36 and 48 V packs incl. SwapCell",
+    parts, project="MotionCore", title="Drive and safety module concept", dwg_no="MTC-DWG-010", date="2026-09-25", rev="P3",
+    key_figures=["Input 20 to 60 V DC: 24, 36 and 48 V packs incl. SwapCell",
                  "250 W reference; 350 W on 24 V (thermal at risk)",
                  "Hardwired twin-channel e-stop: 67 ms worst case (est.)",
                  "Speed limit twice: controller plus independent supervisor",
-                 "Module 243 x 168 x 66 mm, about 1.9 kg (R12 not met)",
+                 "Module 243 x 168 x 66 mm, about 1.9 kg (2.0 kg limit)",
                  "Kit $265 in parts; reference motor $70 to host (est.)"],
     scale_figure=False, context=context,
     cut_exclude=("Reference hub motor, 250 W geared", "E-stop station, twin NC", "Brake interlock switches (pair)",

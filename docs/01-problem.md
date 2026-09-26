@@ -3,7 +3,7 @@ doc_id: MTC-PRB-001
 title: MotionCore problem statement
 project: MotionCore
 doc_type: Problem statement
-version: "0.3"
+version: "0.4"
 status: Draft
 date: '2026-09-25'
 author: Amish Chadha
@@ -21,6 +21,10 @@ revisions:
   date: '2026-09-25'
   author: Amish Chadha
   change: TRL 3. Budget scope (motor costed to hosts), SwapCell and CellGuard links, first host and input range adopted for TRL 3 pending Amish's review (MTC-DDR-001); CargoMule pack corrected to 12S LiFePO4
+- version: "0.4"
+  date: '2026-09-25'
+  author: Amish Chadha
+  change: Recommendations accepted by Amish (DDR-002). Input range 20 to 60 V (CellGuard 16S covered); MTC-DDR-001 items recorded as decided
 ---
 
 # MotionCore problem statement
@@ -47,7 +51,7 @@ Five existing lab designs drive a motor from a lithium pack: CargoMule (a 36 V, 
 
 ### Host projects (first-order envelope)
 
-Table 1 lists the drive needs stated in the host READMEs. MotionCore is sized to cover the first four; DustRunner's 12.8 V system falls outside the 20 to 58 V input range.
+Table 1 lists the drive needs stated in the host READMEs. MotionCore is sized to cover the first four; DustRunner's 12.8 V system falls outside the 20 to 60 V input range.
 
 *Table 1. Drive needs of existing lab host designs.*
 
@@ -57,11 +61,11 @@ Table 1 lists the drive needs stated in the host READMEs. MotionCore is sized to
 | CargoMule | 12S LiFePO4 (38.4 V nominal), 384 Wh | 250 W geared hub, 20 in wheel | Drive cut when the drawbar goes into compression; overrun brakes |
 | PalletPilot | 25.6 V LiFePO4, 20 Ah | Two 24 V hub motors with spring-applied brakes | Two hardwired e-stops, safety relay, walking-pace limit |
 | StepClimber | 24 V LiFePO4, 10 Ah | 24 V worm gearmotor with spring-applied brake | Stop on tilt; brake holds on stairs |
-| DustRunner | 12.8 V LiFePO4 | Two small drive gearmotors | Out of the 20 to 58 V range |
+| DustRunner | 12.8 V LiFePO4 | Two small drive gearmotors | Out of the 20 to 60 V range |
 
 ### Operating environment
 
-- **Supply:** LiFePO4 or lithium-ion packs from 8S LiFePO4 (about 25.6 V nominal, 29.2 V full) to 13S lithium-ion (54.6 V full), including the portfolio's SwapCell pack.
+- **Supply:** LiFePO4 or lithium-ion packs from 8S LiFePO4 (about 25.6 V nominal, 29.2 V full) to 13S lithium-ion (54.6 V full) and 16S LiFePO4 (58.4 V full), including the portfolio's SwapCell pack and CellGuard-managed packs.
 - **Power:** 250 W continuous reference, up to 500 W continuous on 24 V hosts; short peaks to about 750 W.
 - **Climate:** 0 to 40 °C ambient in the working range, rain and dust on outdoor hosts, vibration from rough roads and stairs.
 - **Speeds:** walking pace (about 1.5 m/s, 5.4 km/h) for walk-behind machines; up to 25 km/h for pedal-assist hosts.
@@ -72,7 +76,7 @@ Table 1 lists the drive needs stated in the host READMEs. MotionCore is sized to
 - Off-the-shelf, openly documented parts: a VESC-class controller ([VESC project](https://vesc-project.com/)), a DC contactor, standard fuses and industrial pushbuttons.
 - The emergency stop must work without any firmware: a hardwired loop that opens the main contactor.
 - One connector set shared by all hosts; keyed so that the safety loop and the command lines cannot be swapped.
-- Compatible with SwapCell interface v0.3 (the supervisor acts as the vehicle host) and the CellGuard BMS where a host uses them (adopted for TRL 3 pending Amish's review, MTC-DDR-001 items 7 and 8).
+- Compatible with SwapCell interface v0.3 (the supervisor acts as the vehicle host) and the CellGuard BMS where a host uses them (decided by Amish, 2026-09-25, MTC-DDR-001 items 7 and 8).
 - Research prototype only. MotionCore does not make a host compliant with any machinery, vehicle or pedelec regulation; each host remains responsible for its own risk assessment.
 
 ## Out of scope
@@ -93,7 +97,7 @@ Table 1 lists the drive needs stated in the host READMEs. MotionCore is sized to
 
 ## Open questions
 
-At TRL 3 the recommendations on first host, SwapCell heartbeat, stop category and input range were adopted for TRL 3 under Amish's 2026-09-25 instruction, open for his review (MTC-DDR-001): CargoMule is the proposed first adopter, subject to its project's agreement; the supervisor sends the SwapCell heartbeat; category 0 is the default with category 1 as a per-host option; and the range stays 20 to 58 V, so DustRunner stays out of scope. Still open:
+On 2026-09-25 Amish decided to go with the recommendations on first host, SwapCell heartbeat, stop category and input range (MTC-DDR-001, MTC-DDR-002): CargoMule is the first adopter, subject to its project's agreement; the supervisor sends the SwapCell heartbeat; category 0 is the default with category 1 as a per-host option; and the range is 20 to 60 V, which covers CellGuard's 16S LiFePO4 packs, so DustRunner stays out of scope. Still open:
 
 - Do the host leads agree to swap their current drive sections for MotionCore, starting with CargoMule?
 - Can StepClimber's brushed worm gearmotor run from the VESC DC motor mode, or does it need a different power stage? Proposed, awaiting Amish.

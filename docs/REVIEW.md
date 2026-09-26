@@ -1,5 +1,72 @@
 # Review note: MotionCore
 
+## Session 2026-09-25: recommendations accepted
+
+On 2026-09-25 Amish wrote: "i accept all your recommendations, go with them across all repos." Every item with a recommendation is now **decided by Amish, 2026-09-25: go with recommendation**. The decisions are recorded in `docs/decisions/0002-recommendations-accepted.md` (MTC-DDR-002 v0.1), and MTC-DDR-001 moved to v0.2 with its statuses updated.
+
+### Decisions applied and what changed
+
+| Item | Decision | Before | After |
+| --- | --- | --- | --- |
+| MTC-DDR-001 items 1 to 11 | Decided as recommended (budget scope, input range, controller, contactor, stop category, interface v0.1, SwapCell heartbeat, CellGuard link, 350 W heavy case, separate firmware, CargoMule first) | "Adopted for TRL 3, open for Amish's review" | "Decided by Amish, 2026-09-25"; no design change |
+| Budget (item 1) | Option (b): budget covers the MotionCore kit; motor costed to hosts | `budget_usd` $300 | $300, unchanged (no new figure was recommended); kit $265, $35 margin |
+| R12 mass (item 15) | Option (a): relax the limit | 1.5 kg, **not met** (1.94 kg) | 2.0 kg, met with 0.06 kg margin |
+| R1 upper bound (item 17) | Raise to cover CellGuard 16S LiFePO4 (58.4 V full) | 20 to 58 V | 20 to 60 V |
+| Controller overvoltage fault (item 16, as a consequence of item 17) | Keep headroom above a full 16S pack | 60 V; bus peak 62.0 V | 66 V; bus peak 67.8 V (75 V rating) |
+| Fuse rating (item 16, as a consequence of item 17) | Follow R1 | 58 V DC or more, 1 kA | 60 V DC or more, 1 kA |
+| Direct-drive back-EMF limit | Follows the 60 V bound | 1.29 times no-load speed | 1.25 times no-load speed |
+| Other TRL 3 engineering proposals (item 16) | Confirmed: two CAN buses, 0.6 s precharge with 90 % check, 4 mm² leads for 24 V, 24 V Zener suppressor | Awaiting confirmation | Decided design rules (MTC-PRC-001 v0.4 item 11) |
+| R10 sealing (item 18) | Evaluate a sealed power connector before freezing interface v0.1 | XT90 in interface v0.1 | XT90 marked provisional; evaluation is a later TRL 3 paper task; geometry unchanged |
+
+Files changed: MTC-PRB-001 v0.4, MTC-PRC-001 v0.4, MTC-REQ-001 v0.4, MTC-CAL-001 v0.2 (`docs/04-calcs/01-sizing.md`, `sizing.py`, `results.csv`), MTC-DDR-001 v0.2, new MTC-DDR-002 v0.1, `bom/bom.csv` (items 2, 5 and 8 specifications; no price change), `bom/bom-notes.md`, `cad/src/sheets.py` and MTC-DWG-001 Rev P1 to P2 (notes only), `cad/src/concept_media.py` and concept sheet MTC-DWG-010 Rev P2 to P3 (key figures), `project.yaml` (evidence list), `README.md`. `cad/src/model.py` is unchanged; STEP, STL, drawings, media and all PDFs were regenerated, and the regenerated hero, blueprint, exploded view and drawing were checked by eye.
+
+The README "What sparked the idea" section was rewritten around a documented precedent: the 2006 CPSC recall of about 23,500 Segway personal transporters that could apply reverse torque unexpectedly, fixed by a software upgrade ([CPSC](https://www.cpsc.gov/Recalls/2006/segway-inc-announces-recall-to-repair-segway-personal-transporters)). The earlier text that attributed the idea to a review of research areas was removed. `docs/01-problem.md` did not attribute the idea to a review.
+
+### Requirement status now (MTC-CAL-001 v0.2)
+
+Ten of fourteen met on paper; none not met; three at risk; one not verifiable at TRL 3.
+
+| ID | Status | Value |
+| --- | --- | --- |
+| R2 | At risk | Met electrically; 350 W heavy case limited by R9 |
+| R9 | At risk | 50.2 °C reference; 58.5 °C heavy (65 to 71 °C in sensitivity cases) |
+| R10 | At risk | XT90 not sealed; sealed connector to be evaluated; vibration not analyzed |
+| R11 | Not verifiable at TRL 3 | Interface v0.1 drawn; fit time needs a timed fit (TRL 4) |
+| R12 | Met | 1.94 kg against 2.0 kg (was not met against 1.5 kg) |
+| R1, R4, R13 | Met (design review) | 20 to 60 V with 75 V parts; key reset; separate firmware, formal license review open |
+| R3, R5, R6, R7 | Met (paper) | 67 ms; 75 ms; 0.60 to 0.70 s; 170 ms |
+| R8 | Met | 0.55 A peak (0.60 A at 60 V), 1.3 A at closure, 0.6 s |
+| R14 | Met (indicative) | $265 against $300 |
+
+### Still awaiting Amish
+
+1. **Dual-motor hosts (PalletPilot):** two controllers on one supervisor, or two modules. No recommendation.
+2. **Brushed motors (StepClimber):** VESC DC mode or a different power stage. No recommendation.
+3. **Contactor coil economizer** (heavy case about 55.7 °C instead of 58.5 °C): a suggestion only, not a recommendation.
+
+### Cross-repo actions (not changed here)
+
+- **CellGuard:** MotionCore now accepts 16S LiFePO4 up to 58.4 V (R1 20 to 60 V). CellGuard should confirm its 16S pack resistance so that MotionCore can check the prospective short-circuit current against the 1 kA fuse breaking capacity.
+- **SunSpoke:** SunSpoke's host adapter is also its SwapCell charge host (mode 3); whether it keeps that adapter is for the SunSpoke project (MTC-DDR-001 item 14).
+- **SwapCell:** the open question shared with PowerBox stands: may a pack in legacy discharge accept a heartbeat and move to mode 2 without opening its output?
+- **CargoMule:** confirm it agrees to be the first host (MTC-DDR-001 item 11).
+- **GravitySort:** update its MotionCore cost from "about $325" to $265 for the kit plus $70 for the motor.
+
+### Safety
+
+- The overvoltage fault at 66 V leaves less margin to the 75 V MOSFET rating (bus peak 67.8 V instead of 62.0 V). Direct-drive hosts need a speed limit below 1.25 times no-load speed or a bus clamp.
+- Fuses must be rated for 60 V DC or more with 1 kA breaking capacity; 32 V automotive fuses are not suitable.
+- R12's 0.06 kg margin means any added part must be weighed; do not thin the enclosure, which is the heat sink.
+- All other safety concerns from the TRL 3 session below still apply.
+
+### TRL
+
+`trl: 3` and `trl_target: 3` are unchanged. TRL 4 (bench build, safety-function tests, timed fit, vibration) remains on hold by Amish's instruction; nothing in this session started it.
+
+### Recommended next step
+
+A TRL 3 paper evaluation of sealed power connectors for interface v0.1 (R10), then freeze the interface.
+
 ## Session 2026-09-25: TRL 3
 
 ### What was done
@@ -32,9 +99,11 @@ TRL 2 numbers corrected: pack power 333 to 322 W, controller loss 16 to 3.9 W, e
 
 ### Decisions recorded (MTC-DDR-001)
 
-Items 1 to 11 are adopted as recommended for TRL 3 under Amish's 2026-09-25 instruction, open for his review: budget option (b) with the motor costed to hosts and `budget_usd` unchanged at $300; 20 to 58 V input; VESC-class controller; DC contactor; stop category 0 by default; interface v0.1 connectors; supervisor sends the SwapCell heartbeat; CellGuard link over CAN; heavy case derated to 350 W on 24 V; separate firmware licensing; CargoMule as proposed first host. The pitch in `project.yaml` and the README was reworded to match item 1 (DDR-001 records the wording); the problem line is unchanged.
+Items 1 to 11 are decided by Amish, 2026-09-25: go with recommendation (MTC-DDR-002): budget option (b) with the motor costed to hosts and `budget_usd` unchanged at $300; 20 to 58 V input; VESC-class controller; DC contactor; stop category 0 by default; interface v0.1 connectors; supervisor sends the SwapCell heartbeat; CellGuard link over CAN; heavy case derated to 350 W on 24 V; separate firmware licensing; CargoMule as proposed first host. The pitch in `project.yaml` and the README was reworded to match item 1 (DDR-001 records the wording); the problem line is unchanged.
 
 ### Still awaiting Amish
+
+Update, 2026-09-25: items 1, 3 and 4 below are now decided by Amish, 2026-09-25: go with recommendation (MTC-DDR-002); item 5 is settled by item 1 of MTC-DDR-001 ($300 unchanged); item 2 stays proposed, awaiting Amish.
 
 1. **R12 mass (new at TRL 3).** Options: (a) relax R12 to 2.0 kg; (b) 2 mm walls and lid with 3 mm fins, about 1.63 kg, still over and with less heat-sink metal; (c) (b) plus a lighter contactor. Recommendation: (a), because the enclosure is the heat sink and R9 is already at risk.
 2. **Dual-motor hosts (PalletPilot)** and **brushed motors (StepClimber)**. No recommendation was made; they stay proposed, awaiting Amish.
@@ -45,7 +114,7 @@ Items 1 to 11 are adopted as recommended for TRL 3 under Amish's 2026-09-25 inst
 ### Cross-repo notes (not changed in other repos)
 
 - **SwapCell:** MotionCore builds to interface v0.3 as a vehicle host (type 0, mode 2; mode 4 only when a host enables regeneration). It shares PowerBox's open question: may a pack in legacy discharge accept a heartbeat and move to mode 2 without opening its output? The supervisor is powered from the pack, so it depends on this. The INTERLOCK coding resistor is in the host's receptacle, not in MotionCore.
-- **CellGuard:** consistent with CellGuard's recommendations to adopt the SwapCell message set and a STM32G0B1-class controller. Conflict: CellGuard supports 16S LiFePO4 at up to 58.4 V, just above MotionCore's 58 V limit in R1. Raising R1's upper bound to 60 V would cover it (the 75 V parts allow it); proposed, awaiting Amish.
+- **CellGuard:** consistent with CellGuard's recommendations to adopt the SwapCell message set and a STM32G0B1-class controller. Conflict: CellGuard supports 16S LiFePO4 at up to 58.4 V, just above MotionCore's 58 V limit in R1. Raising R1's upper bound to 60 V would cover it (the 75 V parts allow it); decided by Amish, 2026-09-25: go with recommendation (MTC-DDR-002).
 - **SunSpoke:** its host adapter is also the SwapCell charge host (mode 3), so the MotionCore heartbeat does not let SunSpoke drop the adapter unless SunSpoke keeps a charge host elsewhere.
 - **CargoMule:** its 15 A pack limit caps its peak at about 414 W of shaft power; that is a host setting.
 - **GravitySort:** cites MotionCore at "about $325" including the motor; under item 1 that becomes $265 for the kit plus $70 for the motor.
@@ -107,6 +176,8 @@ Requirements not met or at risk:
 - DustRunner (12.8 V) is outside the proposed input range, so MotionCore does not cover all five host projects.
 
 ### Proposed, awaiting Amish
+
+Update, 2026-09-25: all eleven items below are decided by Amish, 2026-09-25: go with recommendation (MTC-DDR-001 v0.2, MTC-DDR-002).
 
 1. **Budget.** Options: (a) raise `budget_usd` from $300 to $330; (b) cost the motor to each host, so the MotionCore kit (module and devices, about $255) meets $300, which changes the pitch wording ("motor, controller and safety module"); (c) cut cost (cheaper VESC variant, local enclosure) to reach $300. Recommendation: (b), keeping the motor as a named reference part in the interface. `project.yaml` is unchanged.
 2. **Input range.** 20 to 58 V (recommended) versus adding a 12 V variant to cover DustRunner.

@@ -48,7 +48,7 @@ In workplaces, moving vehicles and machinery remain leading causes of death. In 
 
 ## What sparked the idea
 
-It came out of a September 2026 review of Design Molecule's applied research areas against the open projects already in the lab. CargoMule, PalletPilot, StepClimber, SunSpoke and DustRunner each describe their own motor and safety logic. The real-world trigger was the pace of small electric vehicle adoption: the IEA counts almost 10 million electric two-wheelers sold in 2025 ([IEA](https://www.iea.org/reports/global-ev-outlook-2026/trends-in-other-ev-modes)), and many conversions and small machines are now built outside any engineering team.
+The idea traces back to a 2006 recall. The U.S. Consumer Product Safety Commission and Segway recalled about 23,500 Segway personal transporters because the machine could unexpectedly apply reverse torque to its wheels and throw the rider; six injuries to heads and wrists were reported, and the fix was a software upgrade ([CPSC recall notice](https://www.cpsc.gov/Recalls/2006/segway-inc-announces-recall-to-repair-segway-personal-transporters)). The recall shows how the safety of a small electric vehicle can hinge on one controller's software. MotionCore starts from the opposite assumption: the controller may misbehave, so an emergency stop that needs no firmware, a speed check on a separate sensor and a brake interlock sit beside it, and every host that bolts the module on inherits them.
 
 ## Problem
 
@@ -58,16 +58,16 @@ Each vehicle or machine concept re-specifies the same drive train and safety log
 
 A standard controller and safety module (open motor controller, e-stop, speed limit and brake interlock) with a named reference hub motor, which the lab's mobility and automation designs bolt on rather than re-engineer.
 
-A finned module, 243 x 168 x 66 mm, holds an open VESC-class controller, a safety supervisor, a DC contactor and a precharge and fuse block. The emergency stop opens the contactor through a hardwired loop that works without any firmware, the speed limit is checked twice (controller and supervisor, each with its own speed signal), and the drive never restarts until the operator resets it. It runs from 24, 36 or 48 V packs, including SwapCell, and reads SwapCell or CellGuard faults over CAN.
+A finned module, 243 x 168 x 66 mm, holds an open VESC-class controller, a safety supervisor, a DC contactor and a precharge and fuse block. The emergency stop opens the contactor through a hardwired loop that works without any firmware, the speed limit is checked twice (controller and supervisor, each with its own speed signal), and the drive never restarts until the operator resets it. It runs from 20 to 60 V packs (24, 36 and 48 V classes), including SwapCell and CellGuard-managed 16S LiFePO4, and reads SwapCell or CellGuard faults over CAN.
 
-The TRL 3 sizing note (MTC-CAL-001) gives, on paper: 250 W continuous at 40 °C ambient with about 50 °C on the case; 350 W on 24 V packs at about 58.5 °C, close to the 60 °C limit (at risk); motor power removed within 67 ms of an e-stop in the worst case; and a MotionCore kit cost of $265 against the $300 budget, with the $70 reference motor costed to each host. The module weighs about 1.94 kg, over its 1.5 kg target. All figures are estimates, not measurements.
+The TRL 3 sizing note (MTC-CAL-001) gives, on paper: 250 W continuous at 40 °C ambient with about 50 °C on the case; 350 W on 24 V packs at about 58.5 °C, close to the 60 °C limit (at risk); motor power removed within 67 ms of an e-stop in the worst case; and a MotionCore kit cost of $265 against the $300 budget, with the $70 reference motor costed to each host. The module weighs about 1.94 kg, inside its 2.0 kg limit. All figures are estimates, not measurements.
 
 Full design precis: [docs/02-concept.md](docs/02-concept.md)
 
 ## Key components
 
 - Reference 250 W geared hub motor, named in the interface and costed to each host (hosts may fit another motor within the rating)
-- Open-source motor controller (VESC class, 20 to 58 V input)
+- Open-source motor controller (VESC class, 20 to 60 V input)
 - Safety supervisor board with its own speed sensor
 - Hardwired twin-channel emergency stop and DC contactor, with precharge and main fuse
 - Brake interlock switches
