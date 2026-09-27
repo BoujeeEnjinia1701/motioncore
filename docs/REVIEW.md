@@ -219,3 +219,29 @@ Review this note and the media, then decide items 1, 2 and 7. If approved, run `
 | Kenya row (By country or region) | CleanTechnica, 2025, reporting KNBS 2024 registrations (trade press, standing alone) | [IEA Global EV Outlook 2026, trends in other EV modes](https://www.iea.org/reports/global-ev-outlook-2026/trends-in-other-ev-modes): electric two-wheeler sales more than tripled in 2025 to over 25,000, around 15 % of new registrations |
 
 All other links in the four sourced README sections (IEA, CPSC micromobility report, HSE fatal injury statistics, Regulation (EU) No 168/2013, CPSC 2006 Segway recall) were fetched and confirmed on 2026-09-26. `docs/01-problem.md` did not cite the replaced source, so no controlled document changed.
+
+## Session 2026-09-26: product appearance model and photoreal renders
+
+Amish chose this repo for the first batch of product renders on 2026-09-26. This session added `cad/src/product_model.py`, an appearance model for photoreal renders, and pointed the README hero at `media/render-hero.png` with a link to `media/render-exploded.png`. The render files are produced separately by the portfolio render pipeline.
+
+### What `product_model.py` adds
+
+- `product_parts()`: 76 parts (27 shell, 19 internal, 26 accessory, 4 context), each with a colour, a render material, its BOM line and an explode offset; `TITLE` and three `RENDER_VIEWS` (hero, exploded, and a module-only detail view).
+- Enclosure: rounded extrusion corners, finned sides with rounded fin tips, a gasket parting line under the lid, six stainless lid screws, a teal name plate and a rating label.
+- Connector panel: yellow XT90 anti-spark socket with contacts, knurled 9-pin motor socket, two threaded M12 sockets with yellow (safety loop) and teal (command) coding rings, vent plug, panel screws and legends.
+- Internals behind the window: controller heat plate, board, bus capacitors and phase terminals; supervisor board on brass standoffs with MCU, CAN transceivers, USB fault-log port and a lit heartbeat LED; contactor with terminal studs and label; aluminum-clad precharge resistor, fuse holder and blade fuse.
+- Reference hub motor with two spoke flanges, side covers and screws, axle flats, nuts and washers; speed sensor magnet ring with eight magnets and the Hall pickup on a small bracket.
+- E-stop station with rounded yellow enclosure, lid seam and screws, legend disc, collar, red mushroom head and cable gland; key and throttle pod with key, legend ring and ribbed thumb lever; the pair of brake switches with levers and plungers.
+- Context: a compact bench top and a simplified harness with mated plugs and a pack lead.
+
+### Differences from `model.py` (Proposed, awaiting Amish)
+
+1. **Clear inspection window in the lid** (175 x 84 mm polycarbonate pane over the supervisor, contactor and fuse block). The BOM lists a plain 3 mm aluminum lid. Recommendation: keep the window for renders only and leave the BOM lid unchanged; if Amish wants it as a feature, assess sealing (R10) and the lid's heat-sink role first.
+2. **Ready and fault lights on the connector panel** (green lit, red unlit). Not in the BOM or interface v0.1. Recommendation: accept as a render detail and, if wanted, add two light pipes from the supervisor board at the next design step.
+3. **Hub motor with two spoke flanges** instead of the single central flange in `model.py`, same flange radius (motor radius plus 6 mm). Recommendation: accept; it matches a real geared hub and changes no interface.
+4. **Render layout.** Motor axle at X = -300 mm (model.py: -380 mm) and raised 6 mm so its flanges rest on the bench; e-stop station at (255, 60) mm (model.py: 300, 150); key and throttle pod and brake switches moved closer to the module. Recommendation: accept as a render-only layout; `model.py`, the STEP files and MTC-DWG-001 keep the bench layout.
+5. **Harness** simplified to one lead per device with mated plugs and an XT90 pack plug, routed for the render layout; brake and speed sensor leads merge into the motor lead run. Recommendation: accept as a render-only simplification.
+
+### Status
+
+This is an appearance model only: no tolerances, no fabrication detail, and every main dimension and interface comes from `PARAMS` in `model.py`, which is unchanged, as are the BOM and the docs. `trl` stays 3, and TRL 4 remains on hold.

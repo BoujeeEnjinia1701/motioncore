@@ -6,9 +6,9 @@
 
 A standard controller and safety module (open motor controller, e-stop, speed limit and brake interlock) with a named reference hub motor, which the lab's mobility and automation designs bolt on rather than re-engineer.
 
-![MotionCore concept](media/hero.png)
+![MotionCore: drive controller and safety module with e-stop and reference hub motor, product render](media/render-hero.png)
 
-[Interactive 3D model](media/viewer.html) · [Concept blueprint (PDF)](media/concept-blueprint.pdf) · [General arrangement MTC-DWG-001 (PDF)](cad/drawings/MTC-DWG-001.pdf) · [Sizing note MTC-CAL-001](docs/04-calcs/01-sizing.md) · [Review note](docs/REVIEW.md)
+[Exploded render](media/render-exploded.png) · [Detail render](media/render-detail.png) · [Interactive 3D model](media/viewer.html) · [Concept blueprint (PDF)](media/concept-blueprint.pdf) · [General arrangement MTC-DWG-001 (PDF)](cad/drawings/MTC-DWG-001.pdf) · [Sizing note MTC-CAL-001](docs/04-calcs/01-sizing.md) · [Review note](docs/REVIEW.md)
 
 ## Concept rationale
 
