@@ -43,7 +43,7 @@ render_all(
     cut_exclude=("Reference hub motor, 250 W geared", "E-stop station, twin NC", "Brake interlock switches (pair)",
                  "Key switch and throttle pod", "Independent speed sensor", "Wiring harness, keyed connectors",
                  "Connector panel, keyed", "Isolation pads and mounting hardware"),
-    flow={"title": "power flow at 250 W shaft output, SwapCell pack, W (estimates, MTC-CAL-001)", "unit": "W",
+    flow={"title": "power flow at 250 W output, W (estimates, MTC-CAL-001)", "unit": "W",
           "stages": [("Pack output", 322), ("Controller input", 316), ("Motor input", 312),
                      ("Motor shaft", 250)],
           "losses": [(0, "Supervisor, coil, path (est.)", 6), (1, "Controller loss (est.)", 4),
