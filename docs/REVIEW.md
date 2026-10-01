@@ -1,5 +1,60 @@
 # Review note: MotionCore
 
+## Session 2026-10-01: build plan and constructable design (kit 1.7.0)
+
+Kit 1.7.0 installed (`.kit/`, `.claude/commands/`, `CLAUDE.md`). Following `.claude/commands/build-plan.md` and `.kit/STANDARDS.md` section 18, the concept model was checked with build123d and made buildable under Amish's 2026-09-30 instruction ("fix the design assumptions to match and be physically feasible"), and the illustrated prototype build plan and the design decisions register were written. Nothing was built or tested; `trl` stays 3.
+
+### Design changes made for construction (MTC-DDR-003, Draft, open for Amish's review)
+
+1. Enclosure: a 56 mm cut length of finned enclosure extrusion (3 mm walls, eleven 3 x 14 mm full-height fins per side, four corner screw ports) on a separate 3 mm floor plate, joined by thermally conductive sealant and four M4 screws. The concept's extruded box with a closed floor and vertical fins cannot be extruded.
+2. Lid: flat 3 mm lid on a 1 mm EPDM gasket, four M4 button-head screws with sealing washers into the corner ports (the concept lid lip clashed with the ports and had no fixing).
+3. Host mounting: four M6 closed-end rivet nuts in the floor plate, rubber pads under their flanges; interface unchanged (four M6 on 180 x 100 mm).
+4. Supervisor board widened to 85 x 88 mm with 35 mm standoffs beside the controller (the concept standoffs overlapped the controller by 3,300 mm³).
+5. Sockets fitted straight through the 3 mm end wall at new spacings (28, 56, 83, 109 mm); the separate panel plate is dropped; XT90 stood on end in a panel frame; M12 sockets on four-screw flanges.
+6. Precharge and fuse block moved beside the contactor, out of the path of the socket bodies.
+7. Fixings added for the controller, contactor and fuse block (screws into holes tapped through the floor, thread sealant).
+8. M8 4-pin speed sensor socket added in the side wall between two fins (the concept had no connector or free pins for the speed sensor).
+9. Adhesive membrane vent on the far end wall (an M12 vent would have pushed the length past 250 mm).
+10. Magnet ring bolted to the motor's six-bolt disc mount; Hall pickup on a bracket on the motor upright, 3.5 mm gap.
+11. Bench rig for the prototype (new BOM line 15, USD 35, not part of the kit): plywood board, slotted motor uprights on angle feet, bar posts and a handlebar stub; the module bolts down through its own interface.
+12. Brake levers with built-in normally closed switches replace bare switches (BOM line 10).
+13. Harness re-routed one lead per socket (the concept ran the power socket's lead to the motor).
+14. A connector pin-out for the safety loop, command and speed sockets (build plan Table 3).
+
+`cad/src/model.py` now builds every component separately and runs 111 constructability checks (`python cad/src/model.py --check`); all pass.
+
+### What was done
+
+- `cad/src/model.py`: constructable model, `build_components()`, checks; STEP and STL regenerated (`cad/step/`, `cad/stl/`).
+- `cad/src/sheets.py`: general arrangement MTC-DWG-001 Rev P3.
+- `cad/src/concept_media.py`: concept media regenerated (concept sheet MTC-DWG-010 Rev P4, hero, exploded, cutaway, flow, `media/model.glb`).
+- `cad/src/build_plan_media.py`: overview, making sketches MTC-DWG-101 to 110, two hole layouts, eight joint close-ups, sixteen assembly step pictures and the wiring diagram (`docs/05-build-plan/`, `cad/drawings/`).
+- `docs/05-build-plan.md` (MTC-BLD-001 v0.1), `docs/06-design-decisions.md` (MTC-DEC-001 v0.1), `docs/decisions/0003-design-for-construction.md` (MTC-DDR-003 v0.1).
+- Updated: `docs/04-calcs/sizing.py` and `01-sizing.md` (MTC-CAL-001 v0.3: floor joint, mass, cost), `docs/03-requirements.md` (v0.5), `docs/02-concept.md` (v0.5), `bom/bom.csv`, `bom/bom-notes.md`, `project.yaml` (`design_state: constructable`, new evidence), README (links line and "Building the prototype").
+
+### Key results
+
+- Module 240 x 168 x 69 mm, about 1.91 kg (R12 met, 0.09 kg margin).
+- Thermal: walls 50.2 °C reference, 58.4 °C heavy; the new floor joint puts the floor plate at about 51.0 and **60.0 °C**, at the R9 limit. R9 stays at risk.
+- Value-engineering target USD 300. Estimated cost of the constructable design USD 293 for the kit (USD 7 under the target); reference motor USD 70 to hosts; bench rig USD 35.
+- Requirement status unchanged: none not met; R2, R9, R10 at risk; R11 not verifiable at TRL 3.
+
+### Proposed, awaiting Amish
+
+All open items are in `docs/06-design-decisions.md`: accepting MTC-DDR-003; interface v0.2 (speed socket and pin-out); the bench rig; the coil economizer (now also the remedy for the floor joint's 1.6 K); the sealed power connector; dual-motor and brushed-motor hosts; the render-only appearance differences; the firmware license review.
+
+### Stale media (made on Amish's Mac)
+
+`media/render-hero.png`, `media/render-exploded.png`, `media/render-detail.png`, `media/card.png` and `media/social-preview.png` still show the concept: connector panel plate, lid lip, 4 mm fins, kit loose on a bench. `cad/src/product_model.py` reads the old panel and fin parameters and needs updating to the constructable design before they are rendered again.
+
+### Safety
+
+The build plan carries six safety stops: no battery during the build, fuse out until checked, first power from a current-limited bench supply, e-stop and precharge checks before the motor is plugged in, wheel clear and a second person at the e-stop for every run, and a pack with its own BMS and a correctly rated fuse. The safety functions remain paper designs until TRL 4.
+
+### Recommended next step
+
+Amish's review of MTC-DDR-003 and the register's open decisions 1 to 4; then the sealed power connector evaluation (open decision 5). Building to the plan is TRL 4 work and stays on hold.
+
 ## Session 2026-09-25: recommendations accepted
 
 On 2026-09-25 Amish wrote: "i accept all your recommendations, go with them across all repos." Every item with a recommendation is now **decided by Amish, 2026-09-25: go with recommendation**. The decisions are recorded in `docs/decisions/0002-recommendations-accepted.md` (MTC-DDR-002 v0.1), and MTC-DDR-001 moved to v0.2 with its statuses updated.

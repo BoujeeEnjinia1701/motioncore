@@ -5,6 +5,7 @@ repo: BoujeeEnjinia1701/motioncore         # GitHub repository, shown on every d
 area: Shared Components
 trl: 3                   # Technology Readiness Level, see .kit/STANDARDS.md section 9
 trl_target: 3
+design_state: constructable   # STANDARDS section 18; see docs/decisions/0003-design-for-construction.md
 trl_evidence:
   - docs/01-problem.md
   - docs/02-concept.md
@@ -23,6 +24,9 @@ trl_evidence:
   - cad/drawings/MTC-DWG-001.pdf
   - bom/bom.csv
   - bom/bom-notes.md
+  - docs/decisions/0003-design-for-construction.md
+  - docs/05-build-plan.md
+  - docs/06-design-decisions.md
 shortlisted: false
 pitch: >-
   A standard controller and safety module (open motor controller, e-stop, speed limit and brake interlock) with a named reference hub motor, which the lab's mobility and automation designs bolt on rather than re-engineer.

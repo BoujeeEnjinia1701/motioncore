@@ -3,9 +3,9 @@ doc_id: MTC-REQ-001
 title: MotionCore requirements
 project: MotionCore
 doc_type: Requirements
-version: "0.4"
+version: "0.5"
 status: Draft
-date: '2026-09-25'
+date: '2026-10-01'
 author: Amish Chadha
 license: CERN-OHL-S-2.0
 revisions:
@@ -25,15 +25,19 @@ revisions:
   date: '2026-09-25'
   author: Amish Chadha
   change: Recommendations accepted by Amish (DDR-002). R1 upper bound 58 to 60 V; R12 mass limit 1.5 to 2.0 kg; status from MTC-CAL-001 v0.2
+- version: "0.5"
+  date: '2026-10-01'
+  author: Amish Chadha
+  change: Constructable design (MTC-DDR-003); status from MTC-CAL-001 v0.3 (R9, R11, R12); R14 reported against the value-engineering target; no status changed
 ---
 
 # MotionCore requirements
 
-These requirements are checked by calculation in MTC-CAL-001 v0.2. Four targets have changed since TRL 2, all decided by Amish on 2026-09-25 (MTC-DDR-001 and MTC-DDR-002): the heavy case in R2 is 350 W instead of 500 W; R14 covers the MotionCore kit without the reference motor; the upper bound of R1 is 60 V instead of 58 V, so that CellGuard's 16S LiFePO4 packs are covered; and the mass limit in R12 is 2.0 kg instead of 1.5 kg, because the enclosure is also the heat sink. No requirement has been verified by test.
+These requirements are checked by calculation in MTC-CAL-001 v0.3, against the constructable design of MTC-DDR-003. Four targets have changed since TRL 2, all decided by Amish on 2026-09-25 (MTC-DDR-001 and MTC-DDR-002): the heavy case in R2 is 350 W instead of 500 W; R14 covers the MotionCore kit without the reference motor; the upper bound of R1 is 60 V instead of 58 V, so that CellGuard's 16S LiFePO4 packs are covered; and the mass limit in R12 is 2.0 kg instead of 1.5 kg, because the enclosure is also the heat sink. No requirement has been verified by test.
 
 The **reference case** used throughout is a 250 W geared hub motor on a 48 V (46.8 V nominal) SwapCell pack at 40 °C ambient. The **heavy case** is 350 W continuous on a 25.6 V (8S) LiFePO4 pack at 40 °C ambient.
 
-On paper, ten requirements are met and none is not met. R2, R9 and R10 are **at risk**; R11 cannot be verified at TRL 3. R12 is met with a margin of only 0.06 kg.
+On paper, ten requirements are met and none is not met. R2, R9 and R10 are **at risk**; R11 cannot be verified at TRL 3. R12 is met with a margin of 0.09 kg.
 
 *Table 1. Requirements.*
 
@@ -47,12 +51,12 @@ On paper, ten requirements are met and none is not met. R2, R9 and R10 are **at 
 | R6 | Independent speed limit | Speed limit set in the controller and checked by the supervisor from a separate sensor; overspeed of more than 10 % for more than 0.5 s opens the contactor; defaults 25 km/h (pedal assist) and 1.5 m/s (walk-behind) | Firmware review; sensor resolution calculation | Met on paper: period timing, fivefold margin over magnet jitter, trip in 0.60 to 0.70 s; unverified |
 | R7 | Fault reaction | Supervisor removes torque within 200 ms of: command timeout, throttle signal outside 0.5 to 4.5 V, loss of controller CAN heartbeat, over-temperature or BMS fault flag | Fault table review | Met on paper: about 170 ms worst (controller heartbeat), about 80 ms for a BMS fault; unverified |
 | R8 | Precharge | Inrush at contactor closure under 5 A; bus ready within 1 s | Precharge calculation | Met: 0.55 A peak, 1.3 A at closure, ready in 0.6 s |
-| R9 | Thermal | Enclosure surface 60 °C or less at 40 °C ambient in natural convection | Thermal calculation | Reference case met (50.2 °C); **heavy case at risk** (58.5 °C; 65 to 71 °C in sensitivity cases) |
+| R9 | Thermal | Enclosure surface 60 °C or less at 40 °C ambient in natural convection | Thermal calculation | Reference case met (50.2 °C); **heavy case at risk** (58.4 °C on the walls, 60.0 °C on the floor plate; 65 to 71 °C in sensitivity cases) |
 | R10 | Ingress and vibration | Enclosure and mated connectors IP65; survive road and stair vibration without loosening | Datasheets and design review | **At risk:** the XT90 power socket is not sealed; a sealed power connector is to be evaluated before interface v0.1 is frozen (MTC-DDR-002); vibration not analyzed |
-| R11 | One interface | One documented connector set (power in, motor, sensors, safety loop, command) keyed against mis-mating; fitted to a new host in 2 h or less with hand tools | Interface document; timed fit at TRL 4 | Not verifiable at TRL 3: interface v0.1 adopted and drawn (MTC-DWG-001) |
-| R12 | Size and mass | Module within 250 x 170 x 70 mm; module mass 2.0 kg or less (1.5 kg before MTC-DDR-002) | Model and mass estimate | Met: 243 x 168 x 66 mm; about 1.94 kg, 0.06 kg margin |
+| R11 | One interface | One documented connector set (power in, motor, sensors, safety loop, command) keyed against mis-mating; fitted to a new host in 2 h or less with hand tools | Interface document; timed fit at TRL 4 | Not verifiable at TRL 3: interface v0.1 adopted and drawn (MTC-DWG-001 Rev P3), plus an M8 speed sensor socket proposed in MTC-DDR-003 |
+| R12 | Size and mass | Module within 250 x 170 x 70 mm; module mass 2.0 kg or less (1.5 kg before MTC-DDR-002) | Model and mass estimate | Met: 240 x 168 x 69 mm; about 1.91 kg, 0.09 kg margin |
 | R13 | Open and repairable | Hardware under CERN-OHL-S-2.0; supervisor firmware MIT; controller firmware open source; fault log readable over USB without closed software | License review | Met (design review): separate programs on separate processors, CAN link only; formal license review open |
-| R14 | Cost | MotionCore kit (module and devices, BOM items 2 to 14) $300 or less in parts; the reference motor is costed to each host | Priced BOM (`bom/bom.csv`) | Met on indicative prices: $265 (reference motor $70 extra) |
+| R14 | Cost | MotionCore kit (module and devices, BOM items 2 to 14) against a value-engineering target of USD 300 in parts (a hypothetical control target, not a limit); the reference motor is costed to each host | Priced BOM (`bom/bom.csv`) | USD 293 on indicative prices, USD 7 under the target (reference motor USD 70 extra) |
 
 ## Assumptions
 

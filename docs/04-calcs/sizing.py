@@ -1,4 +1,4 @@
-"""MotionCore sizing calculations, MTC-CAL-001 v0.2 (TRL 3, MTC-DDR-002).
+"""MotionCore sizing calculations, MTC-CAL-001 v0.3 (TRL 3, constructable design MTC-DDR-003).
 
 Run from the repo root:  python docs/04-calcs/sizing.py
 Prints every number quoted in docs/04-calcs/01-sizing.md and writes docs/04-calcs/results.csv.
@@ -74,11 +74,15 @@ RHO_CU = 0.0172                     # ohm mm2/m
 LEAD_LEN = 1.5                      # m, pack to module, one way
 # Mass (kg)
 RHO_AL = 2.70e-6                    # kg/mm3
-M_PARTS = {"controller": 0.20, "supervisor": 0.06, "contactor": 0.25, "precharge and fuse block": 0.08,
-           "connector panel and sockets": 0.18, "internal leads": 0.10, "pads and hardware": 0.06}
+M_PARTS = {"controller": 0.20, "supervisor (85 x 88 mm board)": 0.07, "contactor": 0.25, "precharge and fuse block": 0.08,
+           "sockets, XT90 frame, M8 socket and vent": 0.14, "internal leads": 0.10,
+           "pads, rivet nuts, standoffs, screws, gasket and sealant": 0.07}
+# Floor joint (MTC-DDR-003): the floor plate carries the controller, contactor and fuse block and joins the
+# finned tube through a film of thermally conductive silicone sealant on the wall and port end faces.
+K_FILM, T_FILM = 1.0, 0.2e-3        # W/mK, m (film thickness after the screws are tightened)
 M_KIT = {"reference hub motor": 2.40, "e-stop station": 0.25, "brake switches (pair)": 0.08,
          "key and throttle pod": 0.12, "speed sensor": 0.04, "harness": 0.45}
-BUDGET = 300.0
+BUDGET = 300.0                      # USD, value-engineering target (budget_usd), not a limit
 
 rows = []
 
@@ -139,7 +143,7 @@ def surface_temp(q, sun=0.0):
                 "h_t": h_t, "h_r": h_r, "UA": out / dt if dt else 0}
 
 
-print("MotionCore sizing, MTC-CAL-001 v0.2\n")
+print("MotionCore sizing, MTC-CAL-001 v0.3\n")
 
 # ---------------------------------------------------------------- 2. Operating points and currents (R1, R2)
 print("2. Operating points")
@@ -245,6 +249,17 @@ print(f"  Sun on the lid (information): {sun:.1f} W absorbed; reference case {ts
 q_econ = q_h - (P_COIL - 1.0) / ETA_AUX
 ts_econ, _ = surface_temp(q_econ)
 print(f"  With a coil economizer (hold at 1 W): heavy case heat {q_econ:.1f} W, case {ts_econ:.1f} C")
+L_, W_, T_ = P["body_l"], P["body_w"], P["wall"]
+a_joint = (2 * (L_ + W_) * T_ + 4 * math.pi * (P["port_r"] ** 2 - (P["port_hole"] / 2) ** 2)) / 1e6
+g_joint = K_FILM * a_joint / T_FILM
+p_sup_heat = P_SUP / ETA_AUX
+joint = {}
+for name in ("Reference, 250 W on SwapCell", "Heavy, 350 W on 8S LFP"):
+    q, ts, tj = therm[name]
+    dt_j = (q - p_sup_heat) / g_joint
+    joint[name] = (dt_j, ts + dt_j)
+    print(f"  Floor joint ({name}): {q - p_sup_heat:.1f} W through {1e6 * a_joint:.0f} mm2 of sealant film, "
+          f"conductance {g_joint:.1f} W/K: floor plate {dt_j:.1f} K above the walls, {ts + dt_j:.1f} C")
 aux_share = ref_a["p_aux"] / therm["Reference, 250 W on SwapCell"][0]
 print(f"  Aux supply share of the reference-case heat: {100 * aux_share:.0f} %")
 
@@ -255,8 +270,8 @@ res("R2", f"250 W: {ref_a['i']:.1f} A at 46.8 V; 350 W: {heavy_a['i']:.1f} A at 
           f"{peak['swapcell']['i']:.1f} A (SwapCell), {peak['lfp8s']['i']:.1f} A (8S LFP); CargoMule's 15 A pack "
           f"limit caps its peak at about {peak['cargomule_cap']:.0f} W; heavy case thermal at risk (R9)",
     "250 W reference; 350 W heavy (8S LFP); 750 W for 10 s", "At risk")
-res("R9", f"{ts_ref:.1f} C reference; {ts_hv:.1f} C heavy at 350 W, 65 to 71 C in the sensitivity cases "
-          f"({ts_500:.1f} C at 500 W); shade assumed",
+res("R9", f"{ts_ref:.1f} C reference; {ts_hv:.1f} C heavy at 350 W (floor plate {joint['Heavy, 350 W on 8S LFP'][1]:.1f} C), "
+          f"65 to 71 C in the sensitivity cases ({ts_500:.1f} C at 500 W); shade assumed",
     "60 C or less at 40 C ambient", "At risk")
 
 # ---------------------------------------------------------------- 5. E-stop timing (R3)
@@ -356,26 +371,24 @@ print(f"  Direct-drive motors: back-EMF stays under {V_TRANSIENT:.0f} V up to {V
 
 # ---------------------------------------------------------------- 9. Size and mass (R12)
 print("\n9. Size and mass")
-L, W, H, T = P["body_l"], P["body_w"], P["body_h"], P["wall"]
-shell = L * W * H - (L - 2 * T) * (W - 2 * T) * (H - T)
-fins = 2 * P["fin_n"] * P["fin_t"] * P["fin_depth"] * (P["fin_z1"] - P["fin_z0"])
-bosses = 4 * math.pi * 6 ** 2 * 8
-lid = L * W * P["lid_t"] + 2 * ((L - 2 * T - 2) + (W - 2 * T - 2)) * 2 * 3
-m_encl = (shell + fins + bosses + lid) * RHO_AL
+L, W, T = P["body_l"], P["body_w"], P["wall"]
+h_tube = P["body_h"] - P["floor_t"]
+walls = (L * W - (L - 2 * T) * (W - 2 * T)) * h_tube
+ports = 4 * (math.pi * (P["port_r"] ** 2 - (P["port_hole"] / 2) ** 2) + P["port_r"] ** 2) * h_tube
+fins = 2 * P["fin_n"] * P["fin_t"] * P["fin_depth"] * h_tube
+holes_wall = 2 * (11 * 21 + math.pi * (10.25 ** 2 + 2 * 8.25 ** 2)) * T / 2      # connector holes, about
+floor = L * W * P["floor_t"] - 4 * math.pi * 4.5 ** 2 * P["floor_t"]
+lid = L * W * P["lid_t"]
+m_tube = (walls + ports + fins - holes_wall) * RHO_AL
+m_encl = m_tube + (floor + lid) * RHO_AL
 m_mod = m_encl + sum(M_PARTS.values())
 m_kit = m_mod + sum(M_KIT.values())
 m_kit_nomotor = m_kit - M_KIT["reference hub motor"]
 env = envelope()
 print(f"  Module envelope {env[0]:.0f} x {env[1]:.0f} x {env[2]:.0f} mm")
-print(f"  Enclosure metal {m_encl:.2f} kg (body shell {shell * RHO_AL:.2f}, fins {fins * RHO_AL:.2f}, lid "
-      f"{lid * RHO_AL:.2f}); parts {sum(M_PARTS.values()):.2f} kg; module {m_mod:.2f} kg")
+print(f"  Enclosure metal {m_encl:.2f} kg (finned tube {m_tube:.2f}, of which fins {fins * RHO_AL:.2f}; floor plate "
+      f"{floor * RHO_AL:.2f}; lid {lid * RHO_AL:.2f}); parts {sum(M_PARTS.values()):.2f} kg; module {m_mod:.2f} kg")
 print(f"  Kit with motor {m_kit:.1f} kg; MotionCore kit without the reference motor {m_kit_nomotor:.1f} kg")
-for t_try in (2.0,):
-    sh2 = L * W * H - (L - 2 * t_try) * (W - 2 * t_try) * (H - t_try)
-    fn2 = 2 * P["fin_n"] * 3.0 * P["fin_depth"] * (P["fin_z1"] - P["fin_z0"])
-    lid2 = L * W * 2.0 + 2 * ((L - 2 * t_try - 2) + (W - 2 * t_try - 2)) * 2 * 3
-    m2 = (sh2 + fn2 + bosses + lid2) * RHO_AL + sum(M_PARTS.values())
-    print(f"  With 2 mm walls and lid and 3 mm fins: module {m2:.2f} kg")
 res("R12", f"{env[0]:.0f} x {env[1]:.0f} x {env[2]:.0f} mm; {m_mod:.2f} kg", f"250 x 170 x 70 mm; {M_LIMIT:.1f} kg",
     "Met" if m_mod <= M_LIMIT else "Not met")
 print(f"  R12 mass limit {M_LIMIT:.1f} kg: margin {M_LIMIT - m_mod:.2f} kg")
@@ -389,18 +402,22 @@ for r in bom:
     n = int(r["item"].split()[0])
     lines.append((n, float(r["qty"]) * float(r["unit_cost_usd"])))
 motor = sum(c for n, c in lines if n == 1)
-kit = sum(c for n, c in lines if n != 1)
-print(f"  MotionCore kit (items 2 to 14) ${kit:.0f} against ${BUDGET:.0f}: margin ${BUDGET - kit:.0f}")
-print(f"  Reference motor (item 1, costed to each host) ${motor:.0f}; kit with motor ${kit + motor:.0f}")
-res("R14", f"${kit:.0f} for items 2 to 14 (reference motor ${motor:.0f}, costed to the host)",
-    "MotionCore kit $300 or less", "Met (indicative prices)")
+kit = sum(c for n, c in lines if 2 <= n <= 14)
+rig = sum(c for n, c in lines if n == 15)
+d = BUDGET - kit
+print(f"  Value-engineering target: USD {BUDGET:.0f}. Estimated cost of the constructable MotionCore kit (items 2 to 14): "
+      f"USD {kit:.0f} (USD {abs(d):.0f} {'under' if d >= 0 else 'over'} the target)")
+print(f"  Reference motor (item 1, costed to each host) USD {motor:.0f}; kit with motor USD {kit + motor:.0f}; "
+      f"bench rig for the prototype (item 15, not part of the kit) USD {rig:.0f}")
+res("R14", f"USD {kit:.0f} for items 2 to 14 (reference motor USD {motor:.0f} costed to the host; bench rig USD {rig:.0f}, prototype only)",
+    f"Value-engineering target USD {BUDGET:.0f}", f"{'Under' if d >= 0 else 'Over'} the target by USD {abs(d):.0f} (indicative prices)")
 
 # Requirements checked by review only
 res("R10", "XT90 power socket is not sealed; a sealed power connector is to be evaluated before interface v0.1 is frozen "
            "(MTC-DDR-002); M12 and motor plug are IP65 or better when mated; vibration not analyzed",
     "IP65 mated; survive road and stair vibration", "At risk")
-res("R11", "Interface v0.1 adopted: XT90 (provisional), 9-pin motor plug, M12 A-coded safety loop, M12 B-coded command; "
-           "fit time needs a timed fit", "One keyed connector set; fit in 2 h", "Not verifiable at TRL 3")
+res("R11", "Interface v0.1 adopted: XT90 (provisional), 9-pin motor plug, M12 A-coded safety loop, M12 B-coded command, "
+           "plus an M8 speed sensor socket (MTC-DDR-003, to confirm); fit time needs a timed fit", "One keyed connector set; fit in 2 h", "Not verifiable at TRL 3")
 res("R13", "Supervisor firmware MIT on its own processor; VESC firmware unmodified GPL-3.0 on the controller; "
            "CAN link only; formal license review open", "Open hardware and firmware", "Met (design review)")
 

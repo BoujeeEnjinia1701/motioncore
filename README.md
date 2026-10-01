@@ -2,13 +2,13 @@
 
 ![TRL 3](https://img.shields.io/badge/TRL-3%20of%209-0F766E) ![Hardware: CERN-OHL-S-2.0](https://img.shields.io/badge/hardware-CERN--OHL--S--2.0-111827) ![Software: MIT](https://img.shields.io/badge/software-MIT-111827) [![DOI](https://zenodo.org/badge/1388477418.svg)](https://zenodo.org/badge/latestdoi/1388477418) [![REUSE compliant](https://github.com/BoujeeEnjinia1701/motioncore/actions/workflows/reuse.yml/badge.svg)](https://github.com/BoujeeEnjinia1701/motioncore/actions/workflows/reuse.yml) [![Archived in Software Heritage](https://archive.softwareheritage.org/badge/origin/https://github.com/BoujeeEnjinia1701/motioncore/)](https://archive.softwareheritage.org/browse/origin/?origin_url=https://github.com/BoujeeEnjinia1701/motioncore)
 
-**Area:** Shared Components · **TRL:** 3 of 9 (proof of concept on paper) · **Prototype budget:** about $300 USD · **Difficulty:** 4 of 5
+**Area:** Shared Components · **TRL:** 3 of 9 (proof of concept on paper) · **Value-engineering target:** USD 300 (estimated USD 293 for the kit) · **Difficulty:** 4 of 5
 
 A standard controller and safety module (open motor controller, e-stop, speed limit and brake interlock) with a named reference hub motor, which the lab's mobility and automation designs bolt on rather than re-engineer.
 
 ![MotionCore: drive controller and safety module with e-stop and reference hub motor, product render](media/render-hero.png)
 
-[Exploded render](media/render-exploded.png) · [Detail render](media/render-detail.png) · [Interactive 3D model](media/viewer.html) · [Concept blueprint (PDF)](media/concept-blueprint.pdf) · [General arrangement MTC-DWG-001 (PDF)](cad/drawings/MTC-DWG-001.pdf) · [Sizing note MTC-CAL-001](docs/04-calcs/01-sizing.md) · [Review note](docs/REVIEW.md)
+[Exploded render](media/render-exploded.png) · [Detail render](media/render-detail.png) · [Interactive 3D model](media/viewer.html) · [Concept blueprint (PDF)](media/concept-blueprint.pdf) · [General arrangement MTC-DWG-001 (PDF)](cad/drawings/MTC-DWG-001.pdf) · [Sizing note MTC-CAL-001](docs/04-calcs/01-sizing.md) · [Prototype build plan MTC-BLD-001](docs/05-build-plan.md) · [Design decisions MTC-DEC-001](docs/06-design-decisions.md) · [Review note](docs/REVIEW.md)
 
 ## Concept rationale
 
@@ -58,9 +58,9 @@ Each vehicle or machine concept re-specifies the same drive train and safety log
 
 A standard controller and safety module (open motor controller, e-stop, speed limit and brake interlock) with a named reference hub motor, which the lab's mobility and automation designs bolt on rather than re-engineer.
 
-A finned module, 243 x 168 x 66 mm, holds an open VESC-class controller, a safety supervisor, a DC contactor and a precharge and fuse block. The emergency stop opens the contactor through a hardwired loop that works without any firmware, the speed limit is checked twice (controller and supervisor, each with its own speed signal), and the drive never restarts until the operator resets it. It runs from 20 to 60 V packs (24, 36 and 48 V classes), including SwapCell and CellGuard-managed 16S LiFePO4, and reads SwapCell or CellGuard faults over CAN.
+A finned module, 240 x 168 x 69 mm, holds an open VESC-class controller, a safety supervisor, a DC contactor and a precharge and fuse block. The emergency stop opens the contactor through a hardwired loop that works without any firmware, the speed limit is checked twice (controller and supervisor, each with its own speed signal), and the drive never restarts until the operator resets it. It runs from 20 to 60 V packs (24, 36 and 48 V classes), including SwapCell and CellGuard-managed 16S LiFePO4, and reads SwapCell or CellGuard faults over CAN.
 
-The TRL 3 sizing note (MTC-CAL-001) gives, on paper: 250 W continuous at 40 °C ambient with about 50 °C on the case; 350 W on 24 V packs at about 58.5 °C, close to the 60 °C limit (at risk); motor power removed within 67 ms of an e-stop in the worst case; and a MotionCore kit cost of $265 against the $300 budget, with the $70 reference motor costed to each host. The module weighs about 1.94 kg, inside its 2.0 kg limit. All figures are estimates, not measurements.
+The TRL 3 sizing note (MTC-CAL-001) gives, on paper: 250 W continuous at 40 °C ambient with about 50 °C on the case; 350 W on 24 V packs at about 58.5 °C, close to the 60 °C limit (at risk); motor power removed within 67 ms of an e-stop in the worst case; and an estimated MotionCore kit cost of USD 293 against a value-engineering target of USD 300 (USD 7 under), with the USD 70 reference motor costed to each host. The module weighs about 1.91 kg, inside its 2.0 kg limit. All figures are estimates, not measurements.
 
 Full design precis: [docs/02-concept.md](docs/02-concept.md)
 
@@ -72,10 +72,16 @@ Full design precis: [docs/02-concept.md](docs/02-concept.md)
 - Hardwired twin-channel emergency stop and DC contactor, with precharge and main fuse
 - Brake interlock switches
 - Key switch and throttle pod (command input; CAN for host computers)
-- Finned aluminum enclosure that doubles as the heat sink, on four M6 mounts
+- Finned aluminum tube on a floor plate that doubles as the heat sink, on four M6 rivet-nut mounts
 - Wiring harness with keyed connectors
 
 The priced bill of materials is in [bom/bom.csv](bom/bom.csv); the parametric model is `cad/src/model.py`, with STEP and STL exports in `cad/step/` and `cad/stl/`.
+
+## Building the prototype
+
+The first prototype is the module bolted to a plywood bench board through its own mounting points, with the reference hub motor held by its axle in two slotted uprights so the wheel turns clear of the board, the e-stop station beside it and the brake levers and key and throttle pod on a short handlebar. The [prototype build plan](docs/05-build-plan.md) shows every component and every assembly step in pictures drawn from the model, with the checks and safety stops. Making the concept buildable changed how some parts are made and fixed, not what MotionCore does: the walls and fins are a cut length of finned extrusion on a separate floor plate, the sockets go straight through the end wall and a small fifth socket brings in the speed sensor ([MTC-DDR-003](docs/decisions/0003-design-for-construction.md)). Decisions still open are in the [design decisions register](docs/06-design-decisions.md).
+
+![MotionCore prototype: every component pulled apart and numbered in build order](docs/05-build-plan/overview.png)
 
 ## Safety
 

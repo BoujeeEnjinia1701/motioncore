@@ -3,9 +3,9 @@ doc_id: MTC-PRC-001
 title: MotionCore design precis
 project: MotionCore
 doc_type: Design precis
-version: "0.4"
+version: "0.5"
 status: Draft
-date: '2026-09-25'
+date: '2026-10-01'
 author: Amish Chadha
 license: CERN-OHL-S-2.0
 revisions:
@@ -25,15 +25,19 @@ revisions:
   date: '2026-09-25'
   author: Amish Chadha
   change: Recommendations accepted by Amish (DDR-002). Input 20 to 60 V, controller overvoltage fault 66 V, fuses rated 60 V DC or more, module mass limit 2.0 kg, XT90 provisional pending a sealed-connector evaluation; TRL 3 engineering proposals confirmed
+- version: "0.5"
+  date: '2026-10-01'
+  author: Amish Chadha
+  change: Constructable design (MTC-DDR-003, Draft, open for Amish's review). Finned tube on a floor plate, sockets through the end wall, M8 speed socket, bench rig for the prototype; size, mass and cost updated; budget as a value-engineering target
 ---
 
 # MotionCore design precis
 
 ## Summary
 
-MotionCore is a finned aluminum module, 243 x 168 x 66 mm, that sits between a host's battery pack and its motor. Inside are an open VESC-class motor controller, a small safety supervisor board, a DC contactor and a precharge and fuse block. Outside, one keyed connector panel links it to a named reference 250 W geared hub motor, a twin-channel emergency stop, two brake switches, a key and throttle pod and an independent speed sensor. The emergency stop opens the contactor through a hardwired loop, so it works even if both processors fail. The speed limit is held twice: once in the controller and once in the supervisor, which reads its own sensor.
+MotionCore is a finned aluminum module, 240 x 168 x 69 mm, that sits between a host's battery pack and its motor. Inside are an open VESC-class motor controller, a small safety supervisor board, a DC contactor and a precharge and fuse block. Outside, one keyed connector set on its end wall links it to a named reference 250 W geared hub motor, a twin-channel emergency stop, two brake switches, a key and throttle pod and an independent speed sensor. The emergency stop opens the contactor through a hardwired loop, so it works even if both processors fail. The speed limit is held twice: once in the controller and once in the supervisor, which reads its own sensor.
 
-The TRL 3 sizing note (MTC-CAL-001) gives, on paper: 6.9 A from a SwapCell pack in the reference case, about 50 °C on the case, motor power removed within 67 ms of an e-stop (worst case), and a MotionCore kit cost of $265 against the $300 budget, with the $70 reference motor costed to each host. The module weighs about 1.94 kg, inside the 2.0 kg limit Amish set in place of 1.5 kg (R12 met, 0.06 kg margin), and the 350 W heavy case on a 24 V pack runs close to the 60 °C case limit (R9 at risk). The design choices below were decided by Amish on 2026-09-25, going with the recommendations (MTC-DDR-001 and MTC-DDR-002).
+The TRL 3 sizing note (MTC-CAL-001) gives, on paper: 6.9 A from a SwapCell pack in the reference case, about 50 °C on the case, motor power removed within 67 ms of an e-stop (worst case), and an estimated MotionCore kit cost of USD 293 against a value-engineering target of USD 300 (USD 7 under), with the USD 70 reference motor costed to each host. The module weighs about 1.91 kg, inside the 2.0 kg limit Amish set in place of 1.5 kg (R12 met, 0.09 kg margin), and the 350 W heavy case on a 24 V pack runs close to the 60 °C case limit (R9 at risk). The design was made buildable in MTC-DDR-003 (Draft, open for Amish's review) without changing what it does; the prototype build plan is MTC-BLD-001. The design choices below were decided by Amish on 2026-09-25, going with the recommendations (MTC-DDR-001 and MTC-DDR-002).
 
 ![MotionCore concept](../media/hero.png)
 
@@ -62,15 +66,15 @@ The TRL 3 sizing note (MTC-CAL-001) gives, on paper: 6.9 A from a SwapCell pack 
 | 3 | Safety supervisor board | Microcontroller with two CAN buses, 18 to 75 V buck for the coil and logic, independent speed input, throttle, brake and e-stop channel B inputs, contactor enable switch, precharge switch, fault log |
 | 4 | Main DC contactor, 100 A | Removes all power to the controller on e-stop or fault; coil in the safety loop; breaks at least 50 A at 60 V DC; releases within 50 ms with a 24 V Zener suppressor |
 | 5 | Precharge and main fuse block | 100 Ω precharge resistor and switch; main fuse rated 60 V DC or more: 20 A for 36 and 48 V hosts, 40 A for 24 V hosts |
-| 6 | Enclosure body, finned aluminum | Heat sink for the controller; four M6 mounting inserts on a 180 x 100 mm pattern |
-| 7 | Enclosure lid | Gasketed cover |
-| 8 | Connector panel, keyed | Power in, motor, safety loop and command connectors |
+| 6 | Enclosure: finned tube and floor plate | Heat sink for the controller: a cut length of finned extrusion on a 3 mm floor plate; four M6 rivet nuts on a 180 x 100 mm pattern (MTC-DDR-003) |
+| 7 | Lid and lid gasket | Flat 3 mm lid on a 1 mm EPDM gasket, four screws into the corner ports |
+| 8 | Connector set and vent | Power in, motor, safety loop and command sockets through the end wall; M8 speed sensor socket in the side wall; membrane vent |
 | 9 | E-stop station, twin NC | Red mushroom head on yellow, two normally closed contact blocks, twist release |
-| 10 | Brake interlock switches (pair) | Normally closed switches on each brake lever or pedal |
+| 10 | Brake levers with interlock switches (pair) | Normally closed switches in each brake lever (a host may use its own lever or pedal switches) |
 | 11 | Key switch and throttle pod | Enable key (reset after a stop) and a hall-effect throttle |
 | 12 | Independent speed sensor | Magnet ring and Hall pickup, read only by the supervisor |
-| 13 | Wiring harness, keyed connectors | Pre-made leads from the panel to each device; 4 mm² pack leads for 24 V hosts |
-| 14 | Isolation pads and consumables | Rubber pads on the host mounting points, standoffs, thermal pad |
+| 13 | Wiring harness, keyed connectors | Pre-made leads from the sockets to each device; 4 mm² pack leads for 24 V hosts |
+| 14 | Pads, rivet nuts, standoffs and fixings | Rubber pads on the host mounting points, rivet nuts, standoffs, thermal pad, screws |
 
 ![Cutaway](../media/cutaway.png)
 
@@ -78,7 +82,7 @@ The TRL 3 sizing note (MTC-CAL-001) gives, on paper: 6.9 A from a SwapCell pack 
 
 ### Interface (MotionCore interface v0.1)
 
-*Table 2. Connector set on the panel (item 8), from the +X end of the module. Decided by Amish, 2026-09-25 (MTC-DDR-001 item 6); the power connector is provisional until a sealed connector has been evaluated (MTC-DDR-002).*
+*Table 2. Connector set in the +X end wall (item 8), from the socket side. Decided by Amish, 2026-09-25 (MTC-DDR-001 item 6); the power connector is provisional until a sealed connector has been evaluated (MTC-DDR-002).*
 
 | Connector | Type | Lines |
 | --- | --- | --- |
@@ -114,7 +118,7 @@ With about 1,000 µF of bus capacitance and a 100 Ω resistor, the time constant
 The enclosure sheds about 1.17 W per kelvin of rise in still air (clear anodized, shaded).
 
 - **Reference case:** about 10 W of heat (controller 4 W, auxiliary supply and coil 5.4 W, power path 0.4 W at minimum pack voltage): about 50 °C at 40 °C ambient. R9 met.
-- **Heavy case at 350 W:** about 20 W, about 58.5 °C. Met with 1.5 K of margin, which disappears if the controller runs hotter than modeled (65 to 71 °C in the sensitivity cases), so R9 is **at risk**. At 500 W the case would reach about 68 °C, which is why the heavy case is derated.
+- **Heavy case at 350 W:** about 20 W, about 58.4 °C on the walls and 60.0 °C on the floor plate, which joins the finned tube through a sealant film (MTC-CAL-001 v0.3). Met with little or no margin, which disappears if the controller runs hotter than modeled (65 to 71 °C in the sensitivity cases), so R9 is **at risk**. At 500 W the case would reach about 68 °C, which is why the heavy case is derated.
 - The contactor coil is about half of the reference-case heat. A coil economizer would lower the heavy case to about 56 °C.
 
 ### Speed sensing
@@ -127,8 +131,8 @@ The internal bus (supervisor and controller, 500 kbit/s) runs at about 11 % load
 
 ### Size, mass and cost
 
-- Module: 243 x 168 x 66 mm; about 1.94 kg, of which the enclosure metal is about 1.0 kg. R12 (2.0 kg, relaxed from 1.5 kg by MTC-DDR-002) is met with 0.06 kg of margin. Kit: about 5.3 kg with the reference motor, 2.9 kg without.
-- Cost: $265 in parts for the MotionCore kit (BOM items 2 to 14), inside the $300 budget; the reference motor adds $70 and is costed to each host (`bom/bom.csv`).
+- Module: 240 x 168 x 69 mm; about 1.91 kg, of which the enclosure metal is about 1.0 kg. R12 (2.0 kg, relaxed from 1.5 kg by MTC-DDR-002) is met with 0.09 kg of margin. Kit: about 5.2 kg with the reference motor, 2.8 kg without.
+- Cost: value-engineering target USD 300. Estimated cost of the constructable MotionCore kit (BOM items 2 to 14): USD 293 (USD 7 under the target); the reference motor adds USD 70 and is costed to each host, and the prototype's bench rig USD 35 (`bom/bom.csv`).
 
 ## Key design choices
 
@@ -139,7 +143,7 @@ All choices below were decided by Amish on 2026-09-25, going with the recommenda
 3. **Separate supervisor with its own speed sensor.** This gives two independent channels for speed limiting, following the structure of ISO 13849-1 Category 3 without claiming a performance level.
 4. **Stop category 0 by default.** Removing power is simplest to verify. Category 1 (brake electrically, then open the contactor) is a per-host option for heavier hosts.
 5. **Wide input range (20 to 60 V).** One module serves 24, 36 and 48 V hosts, including CellGuard's 16S LiFePO4 packs at 58.4 V full; DustRunner's 12.8 V system stays out of scope.
-6. **Motor as a named reference part, costed to hosts.** The interface names the reference motor, but the $300 budget covers the module and devices only.
+6. **Motor as a named reference part, costed to hosts.** The interface names the reference motor, but the USD 300 value-engineering target covers the module and devices only.
 7. **Supervisor as SwapCell host and CellGuard reader.** The supervisor sends the SwapCell heartbeat and removes torque on a BMS fault.
 8. **Heavy case derated to 350 W on 24 V packs.**
 9. **Separate firmware.** Unmodified GPL-3.0 VESC firmware on the controller and MIT supervisor firmware on its own processor, linked only by CAN.
@@ -166,6 +170,6 @@ Decisions are recorded in [decisions/](decisions/).
 - Dual-motor hosts (PalletPilot): two controllers on one supervisor, or two modules. Proposed, awaiting Amish.
 - Brushed motors (StepClimber): VESC DC mode or a different stage. Proposed, awaiting Amish.
 - Which sealed power connector replaces the unsealed XT90 (R10): the evaluation is decided (MTC-DDR-002) but not yet done.
-- Whether to add a contactor coil economizer (heavy case about 56 °C instead of 58.5 °C): a suggestion only, proposed, awaiting Amish.
+- Whether to add a contactor coil economizer (heavy case about 55.6 °C on the walls instead of 58.4 °C): proposed, awaiting Amish (MTC-DEC-001).
 - Whether a pack in SwapCell legacy discharge accepts a heartbeat and moves to mode 2 without opening its output; raised with SwapCell.
 - Formal review of the license boundary between the VESC firmware (GPL-3.0) and the MIT supervisor firmware.
