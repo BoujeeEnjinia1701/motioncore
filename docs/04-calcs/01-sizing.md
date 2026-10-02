@@ -3,9 +3,9 @@ doc_id: MTC-CAL-001
 title: MotionCore sizing calculations
 project: MotionCore
 doc_type: Calculation note
-version: "0.3"
+version: "0.4"
 status: Draft
-date: '2026-10-01'
+date: '2026-10-02'
 author: Amish Chadha
 license: CERN-OHL-S-2.0
 revisions:
@@ -21,6 +21,10 @@ revisions:
   date: '2026-10-01'
   author: Amish Chadha
   change: Constructable design (MTC-DDR-003). Finned tube on a floor plate with a sealant joint (new floor joint estimate), 3 mm full-height fins, envelope, mass and cost updated; budget reported as a value-engineering target
+- version: "0.4"
+  date: '2026-10-02'
+  author: Amish Chadha
+  change: "Decisions of 2026-10-02 noted under R9, R10, R11 and R13; figures unchanged until sizing.py includes the economizer"
 ---
 
 # MotionCore sizing calculations
@@ -106,7 +110,7 @@ The derate to 350 W at 24 V (MTC-DDR-001 item 9) is needed: 500 W misses the 60 
 - Twice the phase resistance (low-cost controller MOSFETs): 28.9 W, **65.0 °C**.
 - Sun on the lid (information; R9 assumes shade): 10.8 W absorbed, 59.0 °C in the reference case and 66.4 °C in the heavy case.
 
-The auxiliary supply is about 54 % of the reference-case heat, mostly the contactor coil. A coil economizer that holds the contactor at about 1 W would lower the heavy case to 16.5 W, 55.6 °C on the walls and about 57 °C on the floor plate (open decision 4 in MTC-DEC-001). **R9 is met in the reference case and at risk in the heavy case.**
+The auxiliary supply is about 54 % of the reference-case heat, mostly the contactor coil. A coil economizer that holds the contactor at about 1 W (decided on 2026-10-02, wired so the safety loop breaks the coil supply upstream of it; not yet in this note's results or the BOM) would lower the heavy case to 16.5 W, 55.6 °C on the walls and about 57 °C on the floor plate (open decision 4 in MTC-DEC-001). **R9 is met in the reference case and at risk in the heavy case.**
 
 ## 5. Emergency stop timing (R3)
 
@@ -156,8 +160,8 @@ Value-engineering target: USD 300 (`budget_usd`, a hypothetical control target, 
 | --- | --- | --- | --- |
 | R2 | 250 W: 6.9 A; 350 W: 17.7 A; 750 W for 10 s: 21.9 A (SwapCell), 40.9 A (8S LFP) | 250 W reference; 350 W heavy; 750 W for 10 s | At risk (heavy case thermal, R9) |
 | R9 | 50.2 °C reference; 58.4 °C heavy on the walls, 60.0 °C on the floor plate (65 to 71 °C in sensitivity cases) | 60 °C at 40 °C ambient | At risk |
-| R10 | XT90 not sealed; sealed power connector to be evaluated before interface v0.1 is frozen; M12 and motor plug sealed when mated; vibration not analyzed | IP65; survive vibration | At risk |
-| R11 | Interface v0.1 adopted and drawn (MTC-DWG-001 Rev P3), plus an M8 speed sensor socket to confirm (MTC-DDR-003); fit time needs a timed fit | One keyed set; fit in 2 h | Not verifiable at TRL 3 |
+| R10 | XT90 not sealed (bench prototype only, decided 2026-10-02); sealed power connector evaluated on paper against IP67 mated, 40 A or more at 60 V DC; M12 and motor plug sealed when mated; vibration not analyzed | IP65; survive vibration | At risk |
+| R11 | Interface v0.2 decided on 2026-10-02: v0.1 as drawn (MTC-DWG-001 Rev P3) plus the M8 speed sensor socket (MTC-DDR-003 A1); fit time needs a timed fit | One keyed set; fit in 2 h | Not verifiable at TRL 3 |
 | R1 | Three host packs and CellGuard 16S (58.4 V) inside 20 to 60 V; 75 V controller; 18 to 75 V auxiliary buck | 20 to 60 V; 75 V transients | Met (design review) |
 | R3 | 67 ms worst case, 30 ms modeled; no firmware in the path | 100 ms | Met (paper) |
 | R4 | Key reset; supervisor enable conditions | No automatic restart | Met (design review) |
@@ -165,7 +169,7 @@ Value-engineering target: USD 300 (`budget_usd`, a hypothetical control target, 
 | R6 | Period method; 5x margin over jitter; trip 0.60 to 0.70 s | 10 % for 0.5 s | Met (paper) |
 | R7 | 170 ms worst | 200 ms | Met (paper) |
 | R8 | 0.55 A peak; 1.3 A at closure; ready in 0.6 s | Under 5 A; 1 s | Met |
-| R13 | MIT supervisor on its own processor; unmodified GPL-3.0 VESC firmware; CAN link only | Open hardware and firmware | Met (design review); formal license review open |
+| R13 | MIT supervisor on its own processor; unmodified GPL-3.0 VESC firmware; CAN link only | Open hardware and firmware | Met (design review); written license review before any firmware is published |
 | R12 | 240 x 168 x 69 mm; 1.91 kg | 250 x 170 x 70 mm; 2.0 kg | Met (0.09 kg margin) |
 | R14 | USD 293 for items 2 to 14 | Value-engineering target USD 300 | USD 7 under the target (indicative prices) |
 

@@ -3,9 +3,9 @@ doc_id: MTC-DDR-002
 title: MotionCore recommendations accepted
 project: MotionCore
 doc_type: Design decision record
-version: "0.1"
+version: "0.2"
 status: Draft
-date: '2026-09-25'
+date: '2026-10-02'
 author: Amish Chadha
 license: CERN-OHL-S-2.0
 revisions:
@@ -13,6 +13,10 @@ revisions:
   date: '2026-09-25'
   author: Amish Chadha
   change: Recommendations accepted by Amish (DDR-002); record every newly decided item, what changed in the repo and the items still open
+- version: "0.2"
+  date: '2026-10-02'
+  author: Amish Chadha
+  change: "Items 12, 13 and 19 decided by Amish on 2026-10-02 (MTC-DEC-001)"
 ---
 
 # 0002: Recommendations accepted
@@ -46,13 +50,13 @@ No design change alters geometry, mass or price: `cad/src/model.py` is unchanged
 
 ### Items still open
 
-*Table 2. Items that remain proposed, awaiting Amish.*
+*Table 2. Items that remained proposed, awaiting Amish on 2026-09-25; all three decided by Amish on 2026-10-02 ("i approve your recommendations for all 555 open decisions."; MTC-DEC-001).*
 
 | # | Item | Why it stays open |
 | --- | --- | --- |
-| 12 | Dual-motor hosts (PalletPilot): two controllers on one supervisor, or two modules | No recommendation was made |
-| 13 | Brushed motors (StepClimber): VESC DC mode or a different power stage | No recommendation was made |
-| 19 | Contactor coil economizer (heavy case about 55.7 °C instead of 58.5 °C) | A suggestion only in MTC-CAL-001, not a recommendation |
+| 12 | Dual-motor hosts (PalletPilot): two controllers on one supervisor, or two modules | No recommendation was made. Decided 2026-10-02: two controllers on one supervisor, one safety loop and one contactor feeding both |
+| 13 | Brushed motors (StepClimber): VESC DC mode or a different power stage | No recommendation was made. Decided 2026-10-02: VESC DC motor mode |
+| 19 | Contactor coil economizer (heavy case about 55.7 °C instead of 58.5 °C) | A suggestion only in MTC-CAL-001, not a recommendation. Decided 2026-10-02: fit it, wired so the safety loop breaks the coil supply upstream of it |
 
 Item 14 (whether SunSpoke keeps its own SwapCell charge-host adapter) belongs to the SunSpoke project and is listed under cross-repo actions in `docs/REVIEW.md`.
 

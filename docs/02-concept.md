@@ -3,9 +3,9 @@ doc_id: MTC-PRC-001
 title: MotionCore design precis
 project: MotionCore
 doc_type: Design precis
-version: "0.5"
+version: "0.6"
 status: Draft
-date: '2026-10-01'
+date: '2026-10-02'
 author: Amish Chadha
 license: CERN-OHL-S-2.0
 revisions:
@@ -29,6 +29,10 @@ revisions:
   date: '2026-10-01'
   author: Amish Chadha
   change: Constructable design (MTC-DDR-003, Draft, open for Amish's review). Finned tube on a floor plate, sockets through the end wall, M8 speed socket, bench rig for the prototype; size, mass and cost updated; budget as a value-engineering target
+- version: "0.6"
+  date: '2026-10-02'
+  author: Amish Chadha
+  change: "Decisions of 2026-10-02: MTC-DDR-003 accepted; interface v0.2; economizer; sealed connector rule; dual-motor and brushed hosts; license review timing"
 ---
 
 # MotionCore design precis
@@ -82,7 +86,7 @@ The TRL 3 sizing note (MTC-CAL-001) gives, on paper: 6.9 A from a SwapCell pack 
 
 ### Interface (MotionCore interface v0.1)
 
-*Table 2. Connector set in the +X end wall (item 8), from the socket side. Decided by Amish, 2026-09-25 (MTC-DDR-001 item 6); the power connector is provisional until a sealed connector has been evaluated (MTC-DDR-002).*
+*Table 2. Connector set in the +X end wall (item 8), from the socket side. Decided by Amish, 2026-09-25 (MTC-DDR-001 item 6); interface v0.2 adds the M8 speed socket in the side wall (decided 2026-10-02, MTC-DDR-003 A1). The XT90 power connector is for the bench prototype only until the sealed connector evaluation is done (MTC-DDR-002; MTC-DEC-001).*
 
 | Connector | Type | Lines |
 | --- | --- | --- |
@@ -119,7 +123,7 @@ The enclosure sheds about 1.17 W per kelvin of rise in still air (clear anodized
 
 - **Reference case:** about 10 W of heat (controller 4 W, auxiliary supply and coil 5.4 W, power path 0.4 W at minimum pack voltage): about 50 °C at 40 °C ambient. R9 met.
 - **Heavy case at 350 W:** about 20 W, about 58.4 °C on the walls and 60.0 °C on the floor plate, which joins the finned tube through a sealant film (MTC-CAL-001 v0.3). Met with little or no margin, which disappears if the controller runs hotter than modeled (65 to 71 °C in the sensitivity cases), so R9 is **at risk**. At 500 W the case would reach about 68 °C, which is why the heavy case is derated.
-- The contactor coil is about half of the reference-case heat. A coil economizer would lower the heavy case to about 56 °C.
+- The contactor coil is about half of the reference-case heat. A coil economizer, decided on 2026-10-02, lowers the heavy case to about 56 °C; it is wired so the safety loop breaks the coil supply upstream of it, so a stop still drops the contactor within the 50 ms the e-stop timing assumes.
 
 ### Speed sensing
 
@@ -167,9 +171,9 @@ Decisions are recorded in [decisions/](decisions/).
 
 ## Open questions
 
-- Dual-motor hosts (PalletPilot): two controllers on one supervisor, or two modules. Proposed, awaiting Amish.
-- Brushed motors (StepClimber): VESC DC mode or a different stage. Proposed, awaiting Amish.
-- Which sealed power connector replaces the unsealed XT90 (R10): the evaluation is decided (MTC-DDR-002) but not yet done.
-- Whether to add a contactor coil economizer (heavy case about 55.6 °C on the walls instead of 58.4 °C): proposed, awaiting Amish (MTC-DEC-001).
+- Dual-motor hosts (PalletPilot): decided 2026-10-02, two controllers on one supervisor, with one safety loop and one contactor feeding both, so a stop removes torque from both wheels at once.
+- Brushed motors (StepClimber): decided 2026-10-02, the controller's DC motor mode; a different stage only if StepClimber's motor needs more current than the controller is rated for.
+- Which sealed power connector replaces the unsealed XT90 (R10): the paper evaluation is to be done now (decided 2026-10-02) against a rule: keyed, IP67 when mated, 40 A or more continuous at 60 V DC, no exposed live contacts on the pack side; first candidate class an industrial IP67 single-pole connector such as Amphenol's SurLok Plus. The XT90 stays for the bench prototype only.
+- Contactor coil economizer: decided 2026-10-02, fitted (heavy case about 55.6 °C on the walls instead of 58.4 °C); to be added to the model and BOM.
 - Whether a pack in SwapCell legacy discharge accepts a heartbeat and moves to mode 2 without opening its output; raised with SwapCell.
-- Formal review of the license boundary between the VESC firmware (GPL-3.0) and the MIT supervisor firmware.
+- Formal review of the license boundary between the VESC firmware (GPL-3.0) and the MIT supervisor firmware: decided 2026-10-02, a short written review before any firmware is published; a lawyer only if a commercial partner will ship the module.

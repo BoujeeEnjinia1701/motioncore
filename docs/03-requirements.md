@@ -3,9 +3,9 @@ doc_id: MTC-REQ-001
 title: MotionCore requirements
 project: MotionCore
 doc_type: Requirements
-version: "0.5"
+version: "0.6"
 status: Draft
-date: '2026-10-01'
+date: '2026-10-02'
 author: Amish Chadha
 license: CERN-OHL-S-2.0
 revisions:
@@ -29,6 +29,10 @@ revisions:
   date: '2026-10-01'
   author: Amish Chadha
   change: Constructable design (MTC-DDR-003); status from MTC-CAL-001 v0.3 (R9, R11, R12); R14 reported against the value-engineering target; no status changed
+- version: "0.6"
+  date: '2026-10-02'
+  author: Amish Chadha
+  change: "Decisions of 2026-10-02 noted: interface v0.2 (R11), economizer (R9), sealed connector evaluation (R10), license review timing (R13); no status changed"
 ---
 
 # MotionCore requirements
@@ -51,11 +55,11 @@ On paper, ten requirements are met and none is not met. R2, R9 and R10 are **at 
 | R6 | Independent speed limit | Speed limit set in the controller and checked by the supervisor from a separate sensor; overspeed of more than 10 % for more than 0.5 s opens the contactor; defaults 25 km/h (pedal assist) and 1.5 m/s (walk-behind) | Firmware review; sensor resolution calculation | Met on paper: period timing, fivefold margin over magnet jitter, trip in 0.60 to 0.70 s; unverified |
 | R7 | Fault reaction | Supervisor removes torque within 200 ms of: command timeout, throttle signal outside 0.5 to 4.5 V, loss of controller CAN heartbeat, over-temperature or BMS fault flag | Fault table review | Met on paper: about 170 ms worst (controller heartbeat), about 80 ms for a BMS fault; unverified |
 | R8 | Precharge | Inrush at contactor closure under 5 A; bus ready within 1 s | Precharge calculation | Met: 0.55 A peak, 1.3 A at closure, ready in 0.6 s |
-| R9 | Thermal | Enclosure surface 60 °C or less at 40 °C ambient in natural convection | Thermal calculation | Reference case met (50.2 °C); **heavy case at risk** (58.4 °C on the walls, 60.0 °C on the floor plate; 65 to 71 °C in sensitivity cases) |
-| R10 | Ingress and vibration | Enclosure and mated connectors IP65; survive road and stair vibration without loosening | Datasheets and design review | **At risk:** the XT90 power socket is not sealed; a sealed power connector is to be evaluated before interface v0.1 is frozen (MTC-DDR-002); vibration not analyzed |
-| R11 | One interface | One documented connector set (power in, motor, sensors, safety loop, command) keyed against mis-mating; fitted to a new host in 2 h or less with hand tools | Interface document; timed fit at TRL 4 | Not verifiable at TRL 3: interface v0.1 adopted and drawn (MTC-DWG-001 Rev P3), plus an M8 speed sensor socket proposed in MTC-DDR-003 |
+| R9 | Thermal | Enclosure surface 60 °C or less at 40 °C ambient in natural convection | Thermal calculation | Reference case met (50.2 °C); **heavy case at risk** (58.4 °C on the walls, 60.0 °C on the floor plate; 65 to 71 °C in sensitivity cases). The contactor coil economizer decided on 2026-10-02 lowers the heavy case to about 55.6 °C on the walls and 57 °C on the floor plate once it is in the design |
+| R10 | Ingress and vibration | Enclosure and mated connectors IP65; survive road and stair vibration without loosening | Datasheets and design review | **At risk:** the XT90 power socket is not sealed; a sealed power connector is to be evaluated before interface v0.1 is frozen (MTC-DDR-002). Decided 2026-10-02: the paper evaluation is done now against a rule (keyed, IP67 mated, 40 A or more continuous at 60 V DC, no exposed live contacts on the pack side; first candidate class an industrial IP67 single-pole connector such as Amphenol's SurLok Plus), and the XT90 stays for the bench prototype only; vibration not analyzed |
+| R11 | One interface | One documented connector set (power in, motor, sensors, safety loop, command) keyed against mis-mating; fitted to a new host in 2 h or less with hand tools | Interface document; timed fit at TRL 4 | Not verifiable at TRL 3: interface v0.2 decided on 2026-10-02 (MTC-DDR-003 A1): the four sockets of v0.1 drawn in MTC-DWG-001 Rev P3 plus an M8 4-pin speed sensor socket, with the pin-out of build plan Table 3 |
 | R12 | Size and mass | Module within 250 x 170 x 70 mm; module mass 2.0 kg or less (1.5 kg before MTC-DDR-002) | Model and mass estimate | Met: 240 x 168 x 69 mm; about 1.91 kg, 0.09 kg margin |
-| R13 | Open and repairable | Hardware under CERN-OHL-S-2.0; supervisor firmware MIT; controller firmware open source; fault log readable over USB without closed software | License review | Met (design review): separate programs on separate processors, CAN link only; formal license review open |
+| R13 | Open and repairable | Hardware under CERN-OHL-S-2.0; supervisor firmware MIT; controller firmware open source; fault log readable over USB without closed software | License review | Met (design review): separate programs on separate processors, CAN link only; a short written license boundary review is done before any firmware is published (decided 2026-10-02) |
 | R14 | Cost | MotionCore kit (module and devices, BOM items 2 to 14) against a value-engineering target of USD 300 in parts (a hypothetical control target, not a limit); the reference motor is costed to each host | Priced BOM (`bom/bom.csv`) | USD 293 on indicative prices, USD 7 under the target (reference motor USD 70 extra) |
 
 ## Assumptions

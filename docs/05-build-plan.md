@@ -3,9 +3,9 @@ doc_id: MTC-BLD-001
 title: MotionCore prototype build plan
 project: MotionCore
 doc_type: Build plan
-version: "0.1"
+version: "0.2"
 status: Draft
-date: '2026-10-01'
+date: '2026-10-02'
 author: Amish Chadha
 license: CERN-OHL-S-2.0
 revisions:
@@ -13,6 +13,10 @@ revisions:
     date: '2026-10-01'
     author: Amish Chadha
     change: First build plan, with pictures by component and step; design made constructable (MTC-DDR-003)
+  - version: "0.2"
+    date: '2026-10-02'
+    author: Amish Chadha
+    change: "MTC-DDR-003 accepted (2026-10-02)"
 ---
 
 # MotionCore prototype build plan
@@ -31,7 +35,7 @@ The prototype is one MotionCore module bolted to a plywood bench board through i
 
 ## 2. What changed to make it buildable
 
-The concept showed what MotionCore does; some of its parts could not be made, fixed or connected as drawn. Each change below keeps what the module does, and all of them are recorded in decision record MTC-DDR-003, open for Amish's review.
+The concept showed what MotionCore does; some of its parts could not be made, fixed or connected as drawn. Each change below keeps what the module does, and all of them are recorded in decision record MTC-DDR-003, which Amish accepted on 2026-10-02.
 
 *Table 1. Changes from the concept.*
 

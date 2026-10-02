@@ -3,9 +3,9 @@ doc_id: MTC-PRB-001
 title: MotionCore problem statement
 project: MotionCore
 doc_type: Problem statement
-version: "0.4"
+version: "0.5"
 status: Draft
-date: '2026-09-25'
+date: '2026-10-02'
 author: Amish Chadha
 license: CERN-OHL-S-2.0
 revisions:
@@ -25,6 +25,10 @@ revisions:
   date: '2026-09-25'
   author: Amish Chadha
   change: Recommendations accepted by Amish (DDR-002). Input range 20 to 60 V (CellGuard 16S covered); MTC-DDR-001 items recorded as decided
+- version: "0.5"
+  date: '2026-10-02'
+  author: Amish Chadha
+  change: "Brushed and dual-motor host questions decided (MTC-DEC-001, 2026-10-02)"
 ---
 
 # MotionCore problem statement
@@ -100,8 +104,8 @@ Table 1 lists the drive needs stated in the host READMEs. MotionCore is sized to
 On 2026-09-25 Amish decided to go with the recommendations on first host, SwapCell heartbeat, stop category and input range (MTC-DDR-001, MTC-DDR-002): CargoMule is the first adopter, subject to its project's agreement; the supervisor sends the SwapCell heartbeat; category 0 is the default with category 1 as a per-host option; and the range is 20 to 60 V, which covers CellGuard's 16S LiFePO4 packs, so DustRunner stays out of scope. Still open:
 
 - Do the host leads agree to swap their current drive sections for MotionCore, starting with CargoMule?
-- Can StepClimber's brushed worm gearmotor run from the VESC DC motor mode, or does it need a different power stage? Proposed, awaiting Amish.
-- Should a dual-motor host such as PalletPilot use two controllers on one supervisor, or two modules? Proposed, awaiting Amish.
+- Can StepClimber's brushed worm gearmotor run from the VESC DC motor mode, or does it need a different power stage? Decided by Amish, 2026-10-02 (MTC-DEC-001): DC motor mode, unless StepClimber's motor needs more current than the controller is rated for.
+- Should a dual-motor host such as PalletPilot use two controllers on one supervisor, or two modules? Decided by Amish, 2026-10-02 (MTC-DEC-001): two controllers on one supervisor, with one safety loop and one contactor feeding both.
 
 ## User research and co-design
 

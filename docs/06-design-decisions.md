@@ -3,9 +3,9 @@ doc_id: MTC-DEC-001
 title: MotionCore design decisions register
 project: MotionCore
 doc_type: Design decisions register
-version: "0.1"
+version: "0.2"
 status: Draft
-date: '2026-10-01'
+date: '2026-10-02'
 author: Amish Chadha
 license: CERN-OHL-S-2.0
 revisions:
@@ -13,6 +13,10 @@ revisions:
     date: '2026-10-01'
     author: Amish Chadha
     change: Register opened with the build plan; open items from REVIEW.md, MTC-DDR-001 to 003 and the build work; budget treated as a value-engineering target
+  - version: "0.2"
+    date: '2026-10-02'
+    author: Amish Chadha
+    change: "Amish approved the recommendations for open decisions 1 to 9 (2026-10-02); moved to decisions made (MTC-DDR-003 accepted)"
 ---
 
 # MotionCore design decisions register
@@ -21,17 +25,7 @@ Every design decision still to be made, and every decision made, in one place. E
 
 ## Open decisions
 
-| # | Decision needed | Options | Recommendation | Affects in the build | Source |
-| --- | --- | --- | --- | --- | --- |
-| 1 | Design for construction: accept the changes that make the concept buildable (finned tube on a floor plate, rivet nuts, sockets through the wall, supervisor board layout, bench rig and the others) | Accept; change some; revert | Accept | The whole build plan | MTC-DDR-003, Table 1 |
-| 2 | Interface v0.2: a fifth socket for the speed sensor and the pin-out of all sockets | (a) M8 4-pin speed socket and the pin-out of build plan Table 3; (b) a 12-pin M12 safety loop socket that also carries the speed sensor | (a) | Tube drilling, sockets, harness, supervisor wiring | MTC-DDR-003, A1 |
-| 3 | Bench rig for the first prototype | (a) build it, outside the kit total (USD 35); (b) mount the first prototype straight on CargoMule | (a) | Bench board, uprights, feet, posts, handlebar | MTC-DDR-003, A2 |
-| 4 | Contactor coil economizer (holds the coil at about 1 W) | Fit; do not fit | Fit: the heavy case falls from 58.4 to about 55.6 °C on the walls and from 60.0 to about 57 °C on the floor plate, which the floor joint brought to the R9 limit | Supervisor coil switch and wiring | MTC-DDR-002 item 19; MTC-DDR-003, A3 |
-| 5 | Which sealed power connector replaces the unsealed XT90 (R10) | Candidates from the evaluation decided in MTC-DDR-002 item 18 | None yet; the evaluation is a paper task still to do | Power socket hole and frame; the prototype is built with the XT90 | MTC-DDR-002 item 18 |
-| 6 | Dual-motor hosts (PalletPilot) | Two controllers on one supervisor; two modules | None made | Not part of the first prototype | MTC-DDR-001 item 12 |
-| 7 | Brushed motors (StepClimber) | VESC DC mode; a different power stage | None made | Not part of the first prototype | MTC-DDR-001 item 13 |
-| 8 | Appearance model differences from `model.py` (lid window, ready and fault lights, two-flange hub, render layout, simplified harness) | Accept each as render-only, or add to the design | Accept as render-only; renders to be redone on the constructable design | None (renders only) | `docs/REVIEW.md`, session of 2026-09-26 |
-| 9 | Formal review of the license boundary between the VESC firmware (GPL-3.0) and the MIT supervisor firmware | Review now; review before release | Before release | None | MTC-REQ-001 R13 |
+None. All open decisions were decided on 2026-10-02.
 
 ## To confirm when parts are bought
 
@@ -64,3 +58,12 @@ Value-engineering target: USD 300 (a hypothetical control target, not a limit). 
 | 2026-09-25 | R1 upper bound raised from 58 to 60 V for CellGuard 16S packs (overvoltage fault 66 V, fuses 60 V DC as consequences) | Amish, same instruction | MTC-DDR-002 item 17 |
 | 2026-09-25 | Evaluate a sealed power connector before interface v0.1 is frozen; XT90 provisional | Amish, same instruction | MTC-DDR-002 item 18 |
 | 2026-10-01 | The budget is a value-engineering target, not a limit | Amish: "the budgets are a hypothethical control target to ensure we are thinking along a value engineering lens. its ok to ensure wording reflects that the hypothesis budget was x - the real cost being accrued is y" | `.kit/STANDARDS.md` section 18 |
+| 2026-10-02 | Design for construction accepted as made: the changes P1 to P14 (finned tube on a floor plate, rivet nuts, sockets through the wall, supervisor board layout, bench rig and the others) and their knock-on changes | Amish: "i approve your recommendations for all 555 open decisions." | MTC-DDR-003, Table 1 |
+| 2026-10-02 | Interface v0.2: option (a). Issue interface v0.2 with an M8 4-pin speed socket and the pin-out of build plan Table 3, and tell CargoMule, the first host, of the fifth socket | Amish: "i approve your recommendations for all 555 open decisions." | MTC-DDR-003, A1 |
+| 2026-10-02 | Bench rig: option (a). Build it with the first prototype, outside the kit total (USD 35) | Amish: "i approve your recommendations for all 555 open decisions." | MTC-DDR-003, A2 |
+| 2026-10-02 | Contactor coil economizer: fit it, wired so the safety loop breaks the coil supply upstream of the economizer, so a stop still drops the contactor within the 50 ms the e-stop timing assumes | Amish: "i approve your recommendations for all 555 open decisions." | MTC-DDR-002 item 19; MTC-DDR-003, A3 |
+| 2026-10-02 | Sealed power connector: do the paper evaluation now against one rule (keyed, IP67 when mated, at least 40 A continuous at 60 V DC, no exposed live contacts on the pack side); first candidate class, an industrial IP67 single-pole power connector such as Amphenol's SurLok Plus. The XT90 stays for the bench prototype only | Amish: "i approve your recommendations for all 555 open decisions." | MTC-DDR-002 item 18 |
+| 2026-10-02 | Dual-motor hosts (PalletPilot): two controllers on one supervisor, with one safety loop and one contactor feeding both controllers | Amish: "i approve your recommendations for all 555 open decisions." | MTC-DDR-001 item 12 |
+| 2026-10-02 | Brushed motors (StepClimber): the VESC-class controller's DC motor mode; a different power stage only if StepClimber's motor needs more current than the controller is rated for | Amish: "i approve your recommendations for all 555 open decisions." | MTC-DDR-001 item 13 |
+| 2026-10-02 | Appearance model: the lid window, lights, two-flange hub, layout and harness are render-only; the renders are redone on the constructable design before the repo goes public | Amish: "i approve your recommendations for all 555 open decisions." | `docs/REVIEW.md`, session of 2026-09-26 |
+| 2026-10-02 | License boundary: a short written review before any firmware is published; a lawyer only if a commercial partner will ship the module | Amish: "i approve your recommendations for all 555 open decisions." | MTC-REQ-001 R13 |

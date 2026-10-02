@@ -3,9 +3,9 @@ doc_id: MTC-DDR-003
 title: MotionCore design for construction
 project: MotionCore
 doc_type: Design decision record
-version: "0.1"
+version: "0.2"
 status: Draft
-date: '2026-10-01'
+date: '2026-10-02'
 author: Amish Chadha
 license: CERN-OHL-S-2.0
 revisions:
@@ -13,12 +13,16 @@ revisions:
   date: '2026-10-01'
   author: Amish Chadha
   change: Changes that make the concept physically buildable, with the reason for each; made under Amish's 2026-09-30 instruction to make the design physically buildable; open for his review
+- version: "0.2"
+  date: '2026-10-02'
+  author: Amish Chadha
+  change: "Accepted by Amish (2026-10-02), with A1 to A3 as recommended; status kept Draft"
 ---
 
 # 0003: Design for construction
 
 - **Date:** 2026-10-01
-- **Status:** Draft. Made under Amish's 2026-09-30 instruction to make the design physically buildable; open for his review. The items in Table 3 are proposed, awaiting Amish.
+- **Status:** accepted. Amish, 2026-10-02: "i approve your recommendations for all 555 open decisions." This covers every change in Tables 1 and 2 and the recommendations for A1 to A3 in Table 3, which are now decided as recommended and recorded in the design decisions register (MTC-DEC-001).
 
 ## Context
 
@@ -62,17 +66,18 @@ For the enclosure, three routes keep a finned aluminum heat sink: (a) a cut leng
 | Drawings | MTC-DWG-001 Rev P3; making sketches MTC-DWG-101 to 110; concept sheet MTC-DWG-010 Rev P4. | Follows the model. |
 | Documents | MTC-CAL-001 v0.3, MTC-REQ-001 v0.5, MTC-PRC-001 v0.5, `bom/bom.csv` and `bom/bom-notes.md`. No requirement changed status. | Follows the model. |
 
-*Table 3. Proposed, awaiting Amish.*
+*Table 3. Items proposed to Amish; accepted as recommended on 2026-10-02.*
 
 | # | Question | Options | Recommendation |
 | --- | --- | --- | --- |
-| A1 | Interface v0.1 was decided as four connectors (MTC-DDR-001 item 6). The speed sensor needs a fifth, and the pin-out was never set. | (a) M8 4-pin speed socket and the Table 1 P14 pin-out, as modelled, as interface v0.2; (b) a 12-pin M12 safety loop socket that also carries the speed sensor, keeping four connectors. | (a): cheaper sockets, the speed sensor lead stays short, and the 8-pin loop keeps a spare pin. |
-| A2 | The bench rig (P11) adds a board, motor stand and handlebar stub to the prototype. | (a) build it with the first prototype, outside the kit total; (b) mount the first prototype straight on CargoMule. | (a): it lets the safety functions be checked with the wheel off the ground before any host is involved. |
-| A3 | The floor joint adds 1.6 K in the heavy case, so the floor plate reaches the 60 °C limit of R9. | (a) accept, with R9 still at risk; (b) fit the contactor coil economizer already listed as open item 19 of MTC-DDR-002 (walls about 55.6 °C, floor about 57 °C); (c) bond the floor with thermally conductive epoxy (not removable). | (b), decided together with open item 19. |
+| A1 | Interface v0.1 was decided as four connectors (MTC-DDR-001 item 6). The speed sensor needs a fifth, and the pin-out was never set. | (a) M8 4-pin speed socket and the Table 1 P14 pin-out, as modelled, as interface v0.2; (b) a 12-pin M12 safety loop socket that also carries the speed sensor, keeping four connectors. | (a): cheaper sockets, the speed sensor lead stays short, and the 8-pin loop keeps a spare pin. Accepted 2026-10-02: interface v0.2 is issued with the M8 speed socket and this pin-out, and CargoMule is told of the fifth socket. |
+| A2 | The bench rig (P11) adds a board, motor stand and handlebar stub to the prototype. | (a) build it with the first prototype, outside the kit total; (b) mount the first prototype straight on CargoMule. | (a): it lets the safety functions be checked with the wheel off the ground before any host is involved. Accepted 2026-10-02. |
+| A3 | The floor joint adds 1.6 K in the heavy case, so the floor plate reaches the 60 °C limit of R9. | (a) accept, with R9 still at risk; (b) fit the contactor coil economizer already listed as open item 19 of MTC-DDR-002 (walls about 55.6 °C, floor about 57 °C); (c) bond the floor with thermally conductive epoxy (not removable). | (b), decided together with open item 19. Accepted 2026-10-02: the economizer is fitted, wired so the safety loop breaks the coil supply upstream of it, so a stop still drops the contactor within 50 ms. |
 
 ## Consequences
 
 - `design_state: constructable` in `project.yaml`. The build plan MTC-BLD-001 shows every component and step in pictures drawn from the model (`cad/src/build_plan_media.py`), and the open items are in the design decisions register MTC-DEC-001.
+- With A3 accepted on 2026-10-02, the coil economizer is to be added to the model, the BOM and the thermal calculation (heavy case about 55.6 °C on the walls and 57 °C on the floor plate); until then R9 stays at risk as calculated.
 - Requirement status is unchanged: none not met; R2, R9 and R10 at risk; R11 not verifiable at TRL 3; the rest met on paper or by design review (MTC-CAL-001 v0.3).
 - The photoreal renders (`media/render-*.png`), `media/card.png`, `media/social-preview.png` and the appearance model `cad/src/product_model.py` still show the concept: a connector panel plate, a lid with a lip, 4 mm fins and the kit loose on a bench. They need updating on Amish's Mac, where Blender is.
 - The extrusion profile, the controller's mounting holes and the reference motor's axle width and disc mount are confirmed when parts are bought; the floor plate, tube and upright holes move to suit.

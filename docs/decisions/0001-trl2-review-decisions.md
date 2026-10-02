@@ -3,9 +3,9 @@ doc_id: MTC-DDR-001
 title: MotionCore TRL 2 review decisions
 project: MotionCore
 doc_type: Design decision record
-version: "0.2"
+version: "0.3"
 status: Draft
-date: '2026-09-25'
+date: '2026-10-02'
 author: Amish Chadha
 license: CERN-OHL-S-2.0
 revisions:
@@ -17,12 +17,16 @@ revisions:
   date: '2026-09-25'
   author: Amish Chadha
   change: Recommendations accepted by Amish (DDR-002). Items 1 to 11 and 15 to 18 decided; 12 and 13 remain open
+- version: "0.3"
+  date: '2026-10-02'
+  author: Amish Chadha
+  change: "Items 12 and 13 decided by Amish on 2026-10-02 (MTC-DEC-001)"
 ---
 
 # 0001: TRL 2 review decisions
 
 - **Date:** 2026-09-25
-- **Status:** accepted. On 2026-09-25 Amish wrote: "i accept all your recommendations, go with them across all repos." Items 1 to 11 and 15 to 18 are decided by Amish, 2026-09-25: go with recommendation (see MTC-DDR-002 for 15 to 18 and what changed). Items 12 and 13 carry no recommendation and remain proposed, awaiting Amish; item 14 belongs to the SunSpoke project.
+- **Status:** accepted. On 2026-09-25 Amish wrote: "i accept all your recommendations, go with them across all repos." Items 1 to 11 and 15 to 18 are decided by Amish, 2026-09-25: go with recommendation (see MTC-DDR-002 for 15 to 18 and what changed). Items 12 and 13 carried no recommendation on 2026-09-25; recommendations were written later and Amish approved them on 2026-10-02 ("i approve your recommendations for all 555 open decisions."; MTC-DEC-001); item 14 belongs to the SunSpoke project.
 
 ## Context
 
@@ -58,8 +62,8 @@ The options for each item are in `docs/REVIEW.md` (session of 2026-09-25, TRL 2)
 
 | # | Item | Status |
 | --- | --- | --- |
-| 12 | Dual-motor hosts (PalletPilot): two controllers on one supervisor, or two modules | Proposed, awaiting Amish. No recommendation was made at TRL 2 |
-| 13 | Brushed motors (StepClimber): VESC DC mode or a different power stage | Proposed, awaiting Amish. No recommendation was made at TRL 2 |
+| 12 | Dual-motor hosts (PalletPilot): two controllers on one supervisor, or two modules | Decided by Amish, 2026-10-02: two controllers on one supervisor, with one safety loop and one contactor feeding both (MTC-DEC-001) |
+| 13 | Brushed motors (StepClimber): VESC DC mode or a different power stage | Decided by Amish, 2026-10-02: VESC DC motor mode; a different power stage only if StepClimber's motor needs more current than the controller is rated for (MTC-DEC-001) |
 | 14 | SunSpoke's host adapter: SunSpoke also uses it as the SwapCell charge host (mode 3), which MotionCore does not provide, so the adapter cannot simply be dropped | For the SunSpoke project; not changed here |
 | 15 | R12 mass shortfall (1.94 kg against 1.5 kg), found at TRL 3 | Decided by Amish, 2026-09-25: go with recommendation. Option (a): R12 relaxed to 2.0 kg (MTC-DDR-002) |
 | 16 | TRL 3 engineering proposals: two CAN buses on the supervisor, contactor closure at 0.6 s with a 90 % bus check, 58 V DC fuses with 1 kA breaking capacity, 4 mm² pack leads for 24 V hosts, 24 V Zener coil suppressor, controller overvoltage fault at 60 V | Decided by Amish, 2026-09-25: go with recommendation. With R1 raised to 60 V (item 17), the fuse rating becomes 60 V DC and the overvoltage fault 66 V (MTC-DDR-002) |

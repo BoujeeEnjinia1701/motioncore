@@ -306,3 +306,58 @@ This is an appearance model only: no tolerances, no fabrication detail, and ever
 - Kit 1.5.0 synced: STANDARDS v1.5 (sections 12 to 15: product renders, storefront images and image quality, public release, authorship and signing), `.kit/cards.py`, `.kit/image_qc.py`, `.kit/release_gate.py`, issue templates, and the `/render-product` and `/release` commands. `CLAUDE.md` now matches `.kit/CLAUDE.md`.
 - Every `media/render-*.png` recaptioned from its original render with the new layout: the title, concept label and repository sit in a band above the render and the view note in a band below it, each line wrapped to the image width, so no text overlaps other text or the render or runs off the image. `media/card.png` and `media/social-preview.png` regenerated with the same rules.
 - `python .kit/image_qc.py` and `python .kit/release_gate.py` pass. trl stays 3.
+
+## Session 2026-10-02: open decisions decided
+
+Amish, 2026-10-02: "i approve your recommendations for all 555 open decisions." This approves the recommendation written for every open decision in the design decisions register (MTC-DEC-001). trl stays 3; nothing was built, bought or tested, and TRL 4 remains on hold.
+
+### Decisions recorded (9)
+
+| Register item | Decision |
+| --- | --- |
+| 1 | MTC-DDR-003 accepted as made: P1 to P14 and their knock-on changes |
+| 2 | Interface v0.2 issued with the M8 4-pin speed socket and the build plan Table 3 pin-out; CargoMule told of the fifth socket |
+| 3 | Bench rig built with the first prototype, outside the kit total |
+| 4 | Coil economizer fitted, wired so the safety loop breaks the coil supply upstream of it (stop within 50 ms) |
+| 5 | Sealed connector paper evaluation now: keyed, IP67 mated, 40 A or more at 60 V DC, no exposed live contacts; first candidate class such as Amphenol SurLok Plus; XT90 for the bench prototype only |
+| 6 | Dual-motor hosts: two controllers on one supervisor, one safety loop and one contactor feeding both |
+| 7 | Brushed motors: VESC DC motor mode, unless StepClimber's motor needs more current |
+| 8 | Lid window, lights, two-flange hub, layout and harness render-only; renders redone on the constructable design before going public |
+| 9 | Short written license boundary review before any firmware is published; lawyer only for a commercial partner |
+
+All 9 moved to Decisions made in MTC-DEC-001, dated 2026-10-02; the Open decisions section now reads "None."
+
+### Documents changed
+
+- `docs/06-design-decisions.md` (MTC-DEC-001 v0.2): items 1 to 9 moved to Decisions made; Open decisions reads "None"
+- `docs/decisions/0003-design-for-construction.md` (MTC-DDR-003 v0.2): status accepted (kept Draft); A1 to A3 marked accepted; consequence for the economizer added
+- `docs/decisions/0001-trl2-review-decisions.md` (MTC-DDR-001 v0.3): items 12 and 13, marked "Proposed, awaiting Amish", recorded as decided
+- `docs/decisions/0002-recommendations-accepted.md` (MTC-DDR-002 v0.2): items 12, 13 and 19, marked as awaiting Amish, recorded as decided
+- `docs/03-requirements.md` (MTC-REQ-001 v0.6): R9, R10, R11 and R13 status notes for the decisions; no status changed
+- `docs/04-calcs/01-sizing.md` (MTC-CAL-001 v0.4): economizer, connector, interface v0.2 and license review noted; figures unchanged
+- `docs/02-concept.md` (MTC-PRC-001 v0.6): connector table caption (interface v0.2, XT90 bench only); economizer; open questions answered
+- `docs/01-problem.md` (MTC-PRB-001 v0.5): brushed and dual-motor host questions answered
+- `docs/05-build-plan.md` (MTC-BLD-001 v0.2): section 2 says MTC-DDR-003 is accepted
+- `bom/bom-notes.md`: economizer, XT90 bench-only and interface v0.2 noted, not yet in BOM lines or prices
+- PDFs regenerated with `python3 .kit/render.py`; superseded versions removed.
+
+### Follow-up actions to carry approved decisions into the design
+
+The model, BOM quantities and prices, calculations and pictures were not changed in this session. These actions carry the approved decisions into them:
+
+1. Decision 4 (model, BOM, calculations): Add the contactor coil economizer: BOM line and price, its place on the supervisor carrier board in the model, and the heavy-case thermal result in `docs/04-calcs/sizing.py` (about 55.6 °C walls, 57 °C floor plate) so R9 can be re-rated.
+2. Decision 4 (build plan pictures, drawings): Redraw the supervisor and safety loop wiring so the loop breaks the coil supply upstream of the economizer, and check the 50 ms contactor drop-out in the e-stop timing.
+3. Decision 2 (documents): Issue interface v0.2 (four v0.1 sockets plus the M8 speed socket, build plan Table 3 pin-out) and tell CargoMule of the fifth socket.
+4. Decision 5 (documents, then model and BOM): Write the sealed power connector paper evaluation (IP67 mated, 40 A or more at 60 V DC, keyed, no exposed live contacts); once a connector is chosen, change the end wall hole, the socket frame and BOM line 8.
+5. Decision 6 and 7 (documents): Record the dual-motor and brushed-motor host arrangements in the interface notes for PalletPilot and StepClimber (cross-repo).
+6. Decision 8 (pictures): Redo the photoreal renders, card and social preview on the constructable design on Amish's Mac before the repo goes public; keep the lid window out of the design.
+7. Decision 9 (documents): Write the license boundary review before any firmware is published.
+
+### Points found in the review
+
+Raised when the recommendations were written (2026-10-01) and kept here so they are not lost:
+
+- The 2026-09-26 recommendation for the lid window said to assess sealing (R10) and the lid's heat-sink role first; the register's item 8 drops that caveat.
+- The sealed connector evaluation (item 5) was decided as a paper task on 2026-09-25 (MTC-DDR-002, item 18) and is TRL 3 work, but it has not been done, so interface v0.2 (item 2) is being frozen with a provisional power connector.
+- MTC-DDR-002 notes that the CellGuard 16S pack's prospective short-circuit current is unknown against the fuse's 1 kA breaking capacity; this safety check sits only in 'To confirm when parts are bought', where it could be missed before a CellGuard host is fitted.
+- The SwapCell legacy-discharge heartbeat question is shared with PowerBox (its item 8); it should be tracked once, as one cross-repo action with SwapCell.
