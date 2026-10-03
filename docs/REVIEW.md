@@ -361,3 +361,44 @@ Raised when the recommendations were written (2026-10-01) and kept here so they 
 - The sealed connector evaluation (item 5) was decided as a paper task on 2026-09-25 (MTC-DDR-002, item 18) and is TRL 3 work, but it has not been done, so interface v0.2 (item 2) is being frozen with a provisional power connector.
 - MTC-DDR-002 notes that the CellGuard 16S pack's prospective short-circuit current is unknown against the fuse's 1 kA breaking capacity; this safety check sits only in 'To confirm when parts are bought', where it could be missed before a CellGuard host is fitted.
 - The SwapCell legacy-discharge heartbeat question is shared with PowerBox (its item 8); it should be tracked once, as one cross-repo action with SwapCell.
+
+## Session 2026-10-02: approved follow-ups carried out
+
+Amish approved all follow-up actions from the open-decision sign-off on 2026-10-02. trl stays 3; nothing was built or tested.
+
+### Approved follow-ups carried out
+
+1. Decision 4 (model): done. Contactor coil economizer module added on the supervisor carrier board in `cad/src/model.py` (board 85 x 108 mm, module 24 x 14 x 8 mm, six new clearance checks; 116 of 116 constructability checks pass); BOM line 3 now USD 34 (was USD 30, USD 4 for the module, indicative); `docs/04-calcs/sizing.py` now takes the held-coil heat from the economizer: heavy case 16.5 W, 55.6 C on the walls, 56.9 C on the floor plate (was 58.4 C and 60.0 C). R9 re-rated to met on paper; R2 follows it.
+2. Decision 4 (pictures): done. The wiring picture now shows the loop break upstream of a coil economizer block; the supervisor carrier board sketch (MTC-DWG-103, Rev P2) and step and joint pictures were regenerated. The e-stop timing now includes the economizer's output capacitor (limited to 100 uF): worst case 74 ms (was 67 ms), modeled 37 ms; the contactor must still release within 50 ms; inside the 100 ms of R3.
+3. Decision 2 (docs): done. Interface v0.2 is issued in the precis (`docs/02-concept.md`, MTC-PRC-001 v0.7): four v0.1 sockets plus the M8 speed socket, with the pin-out of build plan Table 3 in Table 2a. Telling CargoMule of the fifth socket is a cross-repo action (below).
+4. Decision 5 (docs): done as an evaluation: `docs/decisions/0004-sealed-power-connector-evaluation.md` (MTC-DDR-004, new, proposed) recommends an industrial IP67 single-pole pair against the rule. Not done: changing the end wall hole, socket frame and BOM line 8, because no named part is chosen at TRL 3 (the datasheet check is item 9 of "To confirm when parts are bought"). R10 stays at risk.
+5. Decision 6 and 7 (docs): done in this repo: dual-motor and brushed-motor host arrangements are recorded in the precis interface section; the notes in the PalletPilot and StepClimber repos are cross-repo actions (below).
+6. Decision 8 (pictures): done for the appearance model: `cad/src/product_model.py` now follows the constructable design (floor plate joint, rivet nuts, sockets through the wall with flanges and no panel plate, M8 speed socket, wall vent, fuse block and contactor foot at their model positions, lid screws, lengthened supervisor board with its economizer). The lid window stays out of the design and is render-only (it is widened to show the economizer). Photoreal renders, `media/card.png` and `media/social-preview.png` are made on the Mac: not done here.
+7. Decision 9 (docs): done: `docs/decisions/0005-license-boundary-review.md` (MTC-DDR-005, new, proposed). No change of licenses; a firmware readme stating the boundary is needed before any firmware is published (TRL 4 work).
+
+### Requirement status changes
+
+R2: at risk to met on paper. R9: at risk to met on paper (47.0 C reference, 55.6 C heavy on the walls, 56.9 C on the floor plate, in shade; the two controller sensitivity cases still reach 62 to 68 C). R3 now 74 ms worst case (was 67 ms), still met. R10 stays at risk, R11 not verifiable. Counts: twelve met, one at risk, one not verifiable, none not met.
+
+### Cost and mass
+
+Value-engineering target: USD 300. Estimated cost of the constructable design: USD 297 for the MotionCore kit (USD 3 under the target); `budget_usd` unchanged. Module mass 1.92 kg (R12 limit 2.0 kg, margin 0.08 kg); kit 5.3 kg with the reference motor.
+
+### Documents changed
+
+`docs/04-calcs/01-sizing.md` (MTC-CAL-001 v0.5), `docs/02-concept.md` (MTC-PRC-001 v0.7), `docs/03-requirements.md` (MTC-REQ-001 v0.7), `docs/05-build-plan.md` (MTC-BLD-001 v0.3), `docs/06-design-decisions.md` (MTC-DEC-001 v0.3), `docs/decisions/0003-design-for-construction.md` (MTC-DDR-003 v0.3), new `docs/decisions/0004-sealed-power-connector-evaluation.md` and `0005-license-boundary-review.md` (v0.1), `README.md`, `bom/bom.csv`, `bom/bom-notes.md`. Drawing MTC-DWG-001 is Rev P4; MTC-DWG-103 is Rev P2. STEP and STL regenerated; concept media regenerated.
+
+### Render scenes
+
+Exported to `/home/claude/renders/motioncore`: hero, exploded and detail (one .npz and .json each, plus `motioncore__jobs.json`).
+
+### Cross-repo actions
+
+- CargoMule: tell it of the fifth socket (M8 speed, interface v0.2).
+- PalletPilot: record the dual-motor arrangement (two controllers on one supervisor, one safety loop, one contactor feeding both).
+- StepClimber: record the brushed-motor arrangement (the controller's DC motor mode; another power stage only if the motor needs more current than the controller is rated for).
+- Any repo citing MotionCore interface v0.1 should cite v0.2.
+
+## 2026-10-02: photoreal renders redone on the constructable design
+
+Rendered with Blender Cycles on Amish's Mac from the updated appearance model; captioned with `.kit/photo_caption.py`; `media/card.png` and `media/social-preview.png` regenerated with `.kit/cards.py`. Views: hero, exploded, detail. image_qc passes. Appearance deviations are those logged above as proposed, awaiting Amish.

@@ -124,7 +124,7 @@ def sheets():
         pc("sup", "Supervisor carrier board"), [pc("standoffs"), pc("ctrl"), pc("floor")], dwg_no="MTC-DWG-103",
         title="MotionCore supervisor carrier board: making sketch", material="FR4 perforated board 1.6 mm, 2.54 mm pitch",
         view_shape=b.Pos(0, 0, -(zt + 35)) * sup, inset_view=(35, -50),
-        notes=["Cut 85 x 88 mm from 1.6 mm FR4 perforated board.",
+        notes=["Cut 85 x 108 mm from 1.6 mm FR4 perforated board.",
                "Four 3.2 mm holes for the standoffs: 15 and 75 mm from the edge",
                "  nearest the far end, 6 and 82 mm from the socket-side edge.",
                "The prototype supervisor is built from modules on this board (see",
@@ -132,11 +132,16 @@ def sheets():
                "  two CAN transceivers, 18 to 75 V in, 12 V out buck, coil switch,",
                "  precharge switch, input conditioning for the speed, brake and",
                "  e-stop B signals, and a USB socket for the fault log.",
+               "Coil economizer module (24 x 14 x 8): in the extra strip along the edge",
+               "  away from the sockets, 9 to 33 from the far end, 91 to 105 from the",
+               "  socket-side edge.",
                "Keep all modules inside a 73 x 68 mm area in the middle so the",
                "  modules clear the lid by 10 mm and the four standoff screws.",
                "Fit: four M3 screws into 35 mm hex standoffs; the board sits over",
                "  the controller with 10 mm of air between them.",
                "Check: board flat; no solder tail longer than 2 mm underneath."],
+        rev="P2", revisions=[("P1", "Making sketch for the prototype build plan", "2026-10-01", "AC"),
+                             ("P2", "Board lengthened to 108 mm for the coil economizer", "2026-10-02", "AC")],
         **base))
 
     out.append(bv.component_sheet(
@@ -583,12 +588,13 @@ def wiring():
     blk(108, 16, 20, 12, "Key and throttle pod", "key: enable and reset\nthrottle 0.8 to 4.2 V", "#7C3AED")
     # inside
     blk(25, 54, 12, 9, "Main fuse", "20 A or 40 A,\n60 V DC, 1 kA", "#B45309")
-    blk(44, 54, 16, 9, "Contactor", "100 A; 12 V coil,\n24 V Zener across it", "#C2410C")
+    blk(44, 54, 16, 9, "Contactor", "100 A; 12 V coil via the\neconomizer, Zener across", "#C2410C")
+    blk(44, 64.6, 16, 4.2, "Coil economizer", "", "#15803D")
     blk(44, 43, 16, 7, "Precharge", "100 ohm and switch", "#B45309")
     blk(68, 44, 18, 19, "Motor controller", "VESC class, 75 V:\nB+ and B-, phases,\nHall, temperature,\nCAN", "#0F766E")
     blk(26, 17, 60, 16, "Safety supervisor board",
         "microcontroller with two CAN buses; 18 to 75 V in, 12 V out buck; coil switch (in series with\n"
-        "the loop); precharge switch; speed, brake and e-stop B inputs; throttle input; USB fault log", "#15803D")
+        "the coil); precharge switch; speed, brake and e-stop B inputs; throttle input; USB fault log", "#15803D")
     # power path
     wire([(16, 59), (25, 59)], RED, 2.6); wire([(37, 59), (44, 59)], RED, 2.6); wire([(60, 59), (68, 59)], RED, 2.6)
     lab(20.5, 61.3, "4 mm²", RED, "center"); lab(64, 61.3, "4 mm²", RED, "center")
@@ -600,8 +606,9 @@ def wiring():
     wire([(52, 33), (52, 43)], GRY, 1.0); lab(52.6, 36.3, "precharge switch", GRY)
     wire([(80, 33), (80, 44)], BLU, 1.2); lab(80.6, 36.3, "internal CAN", BLU)
     # coil loop: supervisor 12 V out, e-stop A, key, back to the coil and the supervisor's coil switch
-    wire([(52, 63), (52, 66), (100, 66), (100, 60.5), (108, 60.5)], GRY, 1.4)
-    lab(76, 67.5, "coil loop: e-stop A, the key and the coil switch in series, 0.5 mm²", GRY, "center")
+    wire([(52, 63.3), (52, 64.6)], GRY, 1.4)
+    wire([(60, 66.7), (100, 66.7), (100, 60.5), (108, 60.5)], GRY, 1.4)
+    lab(98, 68.6, "loop: e-stop A, key, then the economizer (upstream of it), 0.5 mm²", GRY, "right")
     wire([(108, 22), (104, 22), (104, 51.5), (118, 51.5), (118, 54)], GRY, 1.2, ":"); lab(104.6, 31, "key in\nthe loop", GRY)
     wire([(108, 57), (97, 57), (97, 30), (86, 30)], BLU, 1.2); lab(97.6, 54.5, "e-stop B", BLU)
     wire([(108, 42.5), (94, 42.5), (94, 26.5), (86, 26.5)], BLU, 1.2); lab(94.6, 40.4, "brakes A, B", BLU)

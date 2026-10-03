@@ -3,7 +3,7 @@ doc_id: MTC-CAL-001
 title: MotionCore sizing calculations
 project: MotionCore
 doc_type: Calculation note
-version: "0.4"
+version: "0.5"
 status: Draft
 date: '2026-10-02'
 author: Amish Chadha
@@ -25,11 +25,15 @@ revisions:
   date: '2026-10-02'
   author: Amish Chadha
   change: "Decisions of 2026-10-02 noted under R9, R10, R11 and R13; figures unchanged until sizing.py includes the economizer"
+- version: "0.5"
+  date: '2026-10-02'
+  author: Amish Chadha
+  change: 'Coil economizer added (BOM line 3, carrier board, thermal and e-stop timing); R9 and R2 re-rated to met on paper; US-style kit cost USD 297'
 ---
 
 # MotionCore sizing calculations
 
-On paper, MotionCore meets ten of its fourteen requirements and none is outright not met. R12 is met after Amish relaxed the mass limit from 1.5 kg to 2.0 kg (MTC-DDR-002): the constructable design of MTC-DDR-003 weighs about 1.91 kg, a margin of 0.09 kg, because the finned enclosure that is also the heat sink weighs about 1.0 kg on its own. R1 now runs to 60 V so that CellGuard's 16S LiFePO4 packs (58.4 V full) are covered. R2 and R9 are **at risk** in the heavy case: at 350 W on an 8S LiFePO4 pack the walls reach about 58.4 °C and the floor plate about 60.0 °C against 60 °C, and reasonable changes to the controller assumptions push it to 65 to 71 °C. R10 is **at risk** because the XT90 power socket is not sealed, and R11 (fit time) cannot be verified at TRL 3. The reference case is comfortable: about 50 °C on the case, 6.9 A from a SwapCell pack, e-stop power removal within 67 ms worst case, and an estimated MotionCore kit cost of USD 293 against a value-engineering target of USD 300 (USD 7 under), with the USD 70 reference motor costed to each host.
+On paper, MotionCore meets twelve of its fourteen requirements and none is outright not met. R12 is met after Amish relaxed the mass limit from 1.5 kg to 2.0 kg (MTC-DDR-002): the constructable design of MTC-DDR-003 weighs about 1.92 kg, a margin of 0.08 kg, because the finned enclosure that is also the heat sink weighs about 1.0 kg on its own. R1 now runs to 60 V so that CellGuard's 16S LiFePO4 packs (58.4 V full) are covered. R2 and R9 are now **met on paper** in the heavy case, because the contactor coil economizer decided on 2026-10-02 is in the design: at 350 W on an 8S LiFePO4 pack the walls reach about 55.6 °C and the floor plate about 56.9 °C against 60 °C (they were 58.4 °C and 60.0 °C with the coil at full power), though reasonable changes to the controller assumptions still push the case to 62 to 68 °C. R10 is **at risk** because the XT90 power socket is not sealed, and R11 (fit time) cannot be verified at TRL 3. The reference case is comfortable: about 47 °C on the case, 6.9 A from a SwapCell pack, e-stop power removal within 74 ms worst case, and an estimated MotionCore kit cost of USD 297 against a value-engineering target of USD 300 (USD 3 under), with the USD 70 reference motor costed to each host.
 
 Every number here is printed by `docs/04-calcs/sizing.py` (run from the repo root: `python docs/04-calcs/sizing.py`), which also writes `docs/04-calcs/results.csv`. The script reads the enclosure dimensions from `cad/src/model.py` and the costs from `bom/bom.csv`. All values are first-principles estimates; nothing is measured.
 
@@ -71,7 +75,7 @@ The controller is more efficient than the blanket 95 % assumed at TRL 2, so the 
 
 For 750 W over 10 s at nominal voltage, the pack current is 21.9 A on SwapCell (inside its 35 A, 10 s limit) and 40.9 A on 8S LiFePO4. CargoMule's own 15 A pack limit caps its peak at about 414 W of shaft power: this is a host setting, which the supervisor respects, not a MotionCore limit. The supervisor sets the controller's battery current limit to the lower of the host setting and the pack's allowed discharge current in PACK_LIMITS.
 
-All three host packs fall inside 20 to 60 V, and so does a full CellGuard 16S LiFePO4 pack at 58.4 V, 1.6 V below the new upper bound (MTC-DDR-002; it was 58 V). The controller is a 75 V class and the auxiliary buck accepts 18 to 75 V, so **R1 is met by design review**. R2 is met electrically; its heavy case depends on R9 and is **at risk**.
+All three host packs fall inside 20 to 60 V, and so does a full CellGuard 16S LiFePO4 pack at 58.4 V, 1.6 V below the new upper bound (MTC-DDR-002; it was 58 V). The controller is a 75 V class and the auxiliary buck accepts 18 to 75 V, so **R1 is met by design review**. R2 is met electrically, and its heavy case now holds with R9, so **R2 is met on paper**.
 
 ## 3. Fuses, contactor and leads
 
@@ -93,30 +97,30 @@ Pack leads of 2.5 mm² over 1.5 m each way drop 0.14 V and lose 1.0 W in the ref
 
 The enclosure has 0.0308 m² of lid, 0.0446 m² of walls and 0.0382 m² of fin faces (0.0454 and 0.0338 m² before MTC-DDR-003: the fins now run the full tube height). At the heavy point the heat-transfer coefficients are about 6.5 W/m²K on the walls, 5.4 on the fins, 6.7 on the lid and 6.4 for radiation, giving a conductance of about 1.18 W/K (the TRL 2 estimate was 1.3 W/K). Heat is taken at minimum pack voltage, where the current is highest.
 
-*Table 4. Case and MOSFET temperatures at 40 °C ambient, shaded.*
+*Table 4. Case and MOSFET temperatures at 40 °C ambient, shaded, with the coil economizer holding the contactor at about 1 W.*
 
 | Case | Heat in the module | Case surface | MOSFET junction |
 | --- | --- | --- | --- |
-| Reference, 250 W on SwapCell | 10.0 W | 50.2 °C | about 52 °C |
-| CargoMule, 250 W | 11.2 W | 51.1 °C | about 54 °C |
-| Heavy, 350 W on 8S LFP | 20.1 W | 58.4 °C | about 67 °C |
-| 500 W on 8S LFP (information) | 32.7 W | 67.7 °C | about 84 °C |
+| Reference, 250 W on SwapCell | 6.5 W | 47.0 °C | about 49 °C |
+| CargoMule, 250 W | 7.6 W | 48.0 °C | about 51 °C |
+| Heavy, 350 W on 8S LFP | 16.5 W | 55.6 °C | about 64 °C |
+| 500 W on 8S LFP (information) | 29.2 W | 65.2 °C | about 81 °C |
 
-**Floor joint (MTC-DDR-003).** The controller, contactor and fuse block sit on the floor plate, which is a separate plate under the finned tube. Their heat (all of it except the supervisor's 0.7 W) crosses a 0.2 mm film of thermally conductive sealant on 2,380 mm² of wall and port end faces, a conductance of about 11.9 W/K. That puts the floor plate about 0.8 K above the walls in the reference case (51.0 °C) and 1.6 K above them in the heavy case (**60.0 °C**, at the R9 limit), and lifts the MOSFET junctions by the same amount (about 69 °C heavy). The floor plate's own underside is ignored, so these figures are on the safe side.
+**Floor joint (MTC-DDR-003).** The controller, contactor and fuse block sit on the floor plate, which is a separate plate under the finned tube. Their heat (all of it except the supervisor's 0.7 W) crosses a 0.2 mm film of thermally conductive sealant on 2,380 mm² of wall and port end faces, a conductance of about 11.9 W/K. That puts the floor plate about 0.5 K above the walls in the reference case (47.5 °C) and 1.3 K above them in the heavy case (**56.9 °C**, 3.1 K under the R9 limit), and lifts the MOSFET junctions by the same amount (about 65 °C heavy). The floor plate's own underside is ignored, so these figures are on the safe side.
 
-The derate to 350 W at 24 V (MTC-DDR-001 item 9) is needed: 500 W misses the 60 °C target by about 8 K. At 350 W the margin is only 1.5 K and depends on the controller assumptions:
+The derate to 350 W at 24 V (MTC-DDR-001 item 9) is needed: 500 W misses the 60 °C target by about 5 K. At 350 W the margin is 4.4 K on the walls and depends on the controller assumptions:
 
-- Phase current twice the bus current (a motor running well below its base speed, as a walk-behind host with a fast winding would): 37.2 W, **70.8 °C**.
-- Twice the phase resistance (low-cost controller MOSFETs): 28.9 W, **65.0 °C**.
-- Sun on the lid (information; R9 assumes shade): 10.8 W absorbed, 59.0 °C in the reference case and 66.4 °C in the heavy case.
+- Phase current twice the bus current (a motor running well below its base speed, as a walk-behind host with a fast winding would): 33.7 W, **68.4 °C**.
+- Twice the phase resistance (low-cost controller MOSFETs): 25.4 W, **62.4 °C**.
+- Sun on the lid (information; R9 assumes shade): 10.8 W absorbed, 56.2 °C in the reference case and 63.8 °C in the heavy case.
 
-The auxiliary supply is about 54 % of the reference-case heat, mostly the contactor coil. A coil economizer that holds the contactor at about 1 W (decided on 2026-10-02, wired so the safety loop breaks the coil supply upstream of it; not yet in this note's results or the BOM) would lower the heavy case to 16.5 W, 55.6 °C on the walls and about 57 °C on the floor plate (open decision 4 in MTC-DEC-001). **R9 is met in the reference case and at risk in the heavy case.**
+**Coil economizer.** The contactor coil takes 4 W at pull-in and, without help, the same while held, which was about half of the reference-case heat. A coil economizer module on the supervisor carrier board (BOM line 3, USD 4.00; decided on 2026-10-02) applies full voltage for 0.5 s and then holds the coil by pulse-width modulation at about 1 W, its own loss included. It saves 3.5 W of input heat in steady state. The auxiliary supply is now about 29 % of the reference-case heat. The currents and fuse sizes of section 3 keep the 4 W pull-in figure, which is the conservative case. The economizer sits after the safety loop's break in the coil supply, so a stop still removes its input (section 5). With the economizer the heavy case is 16.5 W, 55.6 °C on the walls and 56.9 °C on the floor plate. **R9 is met on paper** for the reference and heavy cases (it was at risk in the heavy case); it is not met in the two sensitivity cases above, or in sun, so R9 still rests on shade and on the controller assumptions.
 
 ## 5. Emergency stop timing (R3)
 
-Channel A of the e-stop opens the contactor coil circuit directly. With a 24 V Zener across the coil, the coil current decays from 333 mA to its release point in 2.9 ms (τ = 8.3 ms); a plain diode takes 15.5 ms. Adding 10 ms for contact opening and bounce, 10 ms for armature travel, 5 ms of arc and 2.2 ms during which the bus capacitors (0.69 J) keep the motor running gives about **30 ms modeled** with the Zener and 43 ms with a plain diode.
+Channel A of the e-stop opens the contactor coil circuit directly. With a 24 V Zener across the coil, the coil current decays from 333 mA to its release point in 2.9 ms (τ = 8.3 ms); a plain diode takes 15.5 ms. Adding 10 ms for contact opening and bounce, 10 ms for armature travel, 5 ms of arc, 2.2 ms during which the bus capacitors (0.69 J) keep the motor running and 7.2 ms for the coil economizer's output capacitor to run down (at most 100 uF, specified) gives about **37 ms modeled** with the Zener and 50 ms with a plain diode.
 
-The worst case uses the release time the contactor must meet as a selection criterion (50 ms or less with its suppressor): 10 + 50 + 5 + 2.2 ≈ **67 ms**, inside the 100 ms of R3. In 67 ms a host at 25 km/h travels about 47 cm and a walk-behind machine at 1.5 m/s about 10 cm (69 cm and 15 cm in the full 100 ms). No firmware is in this path, so R3 holds with both processors failed. **R3 is met on paper.** R4 (no automatic restart) is met by circuit review: the coil loop can close only after the key is cycled, and the supervisor closes its switch only at zero throttle with the brakes released and no fault.
+The worst case uses the release time the contactor must meet as a selection criterion (50 ms or less with its suppressor): 10 + 50 + 5 + 2.2 + 7.2 ≈ **74 ms**, inside the 100 ms of R3. In 74 ms a host at 25 km/h travels about 52 cm and a walk-behind machine at 1.5 m/s about 11 cm (69 cm and 15 cm in the full 100 ms). **Coil economizer and the 50 ms drop-out.** The safety loop opens the 12 V supply upstream of the economizer, so a stop removes its input and not just the coil's. The coil is then held at about 83 mA mean (against 333 mA at pull-in), so the current falls to the release point in about 0.6 ms through the Zener, faster than from full current; the 2.9 ms figure above is kept as the bound. The economizer's output capacitor is limited to 100 uF so that it can hold the coil only a further 7.2 ms, which the worst case now includes. The 50 ms release limit stays a selection criterion for the contactor. No firmware is in this path, so R3 holds with both processors failed. **R3 is met on paper.** R4 (no automatic restart) is met by circuit review: the coil loop can close only after the key is cycled, and the supervisor closes its switch only at zero throttle with the brakes released and no fault.
 
 ## 6. Precharge (R8)
 
@@ -132,7 +136,7 @@ With 100 Ω and 1,000 µF the time constant is 100 ms. At the 60 V upper bound o
 | 700C or 28 in, 2.15 m (SunSpoke) | 5.6 pulses/s (179 ms) | 25.8 pulses/s (39 ms) |
 | 200 mm hub, 0.63 m (walk-behind) | 19.0 pulses/s (52 ms) | 88.2 pulses/s (11 ms) |
 
-Counting pulses over 0.5 s is too coarse at walking pace (one count is 26 % of the reading). The supervisor therefore times each period with a 1 MHz timer (resolution about 0.0035 % at 25 km/h); magnet placement jitter of about 2 % leaves a fivefold margin to the 10 % overspeed threshold. Overspeed held for 0.5 s opens the contactor in about 0.70 s at 1.5 m/s and 0.60 s at 25 km/h on a 20 in wheel, including one pulse period and the 67 ms contactor budget. **R6 is met on paper.** The wheel circumference and magnet count are configuration values; a wrong value moves the limit, so they belong on the fault chart.
+Counting pulses over 0.5 s is too coarse at walking pace (one count is 26 % of the reading). The supervisor therefore times each period with a 1 MHz timer (resolution about 0.0035 % at 25 km/h); magnet placement jitter of about 2 % leaves a fivefold margin to the 10 % overspeed threshold. Overspeed held for 0.5 s opens the contactor in about 0.71 s at 1.5 m/s and 0.60 s at 25 km/h on a 20 in wheel, including one pulse period and the 67 ms contactor budget. **R6 is met on paper.** The wheel circumference and magnet count are configuration values; a wrong value moves the limit, so they belong on the fault chart.
 
 Timing budgets: a brake switch sets the controller command to zero in about 75 ms (10 ms debounce, 5 ms loop, 10 ms CAN, 50 ms current ramp), inside 200 ms (**R5 met on paper**). A lost controller heartbeat takes about 170 ms (100 ms timeout plus loop, CAN and ramp), and the contactor is opened as well; a BMS fault, which SwapCell and CellGuard send on change, takes about 80 ms (**R7 met on paper**).
 
@@ -146,11 +150,11 @@ Regeneration at 10 A into a full SwapCell pack raises its terminals to about 55.
 
 ## 9. Size and mass (R12)
 
-The module envelope of the constructable design (MTC-DDR-003) is 240 x 168 x 69 mm, inside 250 x 170 x 70 mm: the panel plate is gone, the lid sits on a 1 mm gasket with button-head screws, and the floor plate stands on 1 mm rivet nut flanges and 3 mm pads, so the tube is 56 mm tall to keep the total under 70 mm. The enclosure metal weighs about 1.00 kg (finned tube 0.50 kg, of which fins 0.14 kg; floor plate 0.25 kg; lid 0.25 kg), and the parts inside and on the walls about 0.91 kg (sockets, frame, speed socket and vent 0.14 kg; pads, rivet nuts, standoffs, screws, gasket and sealant 0.07 kg; supervisor on its wider carrier board 0.07 kg), so the module weighs about **1.91 kg against the 2.0 kg limit: R12 is met**, with 0.09 kg of margin (1.94 kg and 0.06 kg before MTC-DDR-003). Thinner fins (3 mm, typical for an extrusion) and the dropped panel plate more than offset the added fixings. Amish relaxed the limit from 1.5 kg to 2.0 kg (MTC-DDR-002) rather than thin the enclosure, because the enclosure is the heat sink and R9 is at risk. The kit weighs about 5.2 kg with the reference motor and 2.8 kg without it, not counting the bench rig.
+The module envelope of the constructable design (MTC-DDR-003) is 240 x 168 x 69 mm, inside 250 x 170 x 70 mm: the panel plate is gone, the lid sits on a 1 mm gasket with button-head screws, and the floor plate stands on 1 mm rivet nut flanges and 3 mm pads, so the tube is 56 mm tall to keep the total under 70 mm. The enclosure metal weighs about 1.00 kg (finned tube 0.50 kg, of which fins 0.14 kg; floor plate 0.25 kg; lid 0.25 kg), and the parts inside and on the walls about 0.92 kg (sockets, frame, speed socket and vent 0.14 kg; pads, rivet nuts, standoffs, screws, gasket and sealant 0.07 kg; supervisor on its wider carrier board with the coil economizer 0.08 kg), so the module weighs about **1.92 kg against the 2.0 kg limit: R12 is met**, with 0.08 kg of margin (1.94 kg and 0.06 kg before MTC-DDR-003; 1.91 kg before the economizer). Thinner fins (3 mm, typical for an extrusion) and the dropped panel plate more than offset the added fixings. Amish relaxed the limit from 1.5 kg to 2.0 kg (MTC-DDR-002) rather than thin the enclosure, because the enclosure is the heat sink and R9 depends on it. The kit weighs about 5.3 kg with the reference motor and 2.9 kg without it, not counting the bench rig.
 
 ## 10. Cost (R14)
 
-Value-engineering target: USD 300 (`budget_usd`, a hypothetical control target, not a limit). Estimated cost of the constructable design: **USD 293 for the MotionCore kit, items 2 to 14 of `bom/bom.csv` (USD 7 under the target)**. Making the design constructable added USD 28 (enclosure tube and floor plate, sockets with frames and flanges, the M8 speed socket and membrane vent, brake levers, the speed sensor plug, the harness branch, rivet nuts and fixings); it was USD 265 before MTC-DDR-003. The reference hub motor (item 1, USD 70) is costed to each host, which brings a complete kit with motor to USD 363. The bench rig (item 15, USD 35) belongs to the prototype only and is not part of the kit. All prices are indicative. **R14: USD 7 under the value-engineering target.**
+Value-engineering target: USD 300 (`budget_usd`, a hypothetical control target, not a limit). Estimated cost of the constructable design: **USD 297 for the MotionCore kit, items 2 to 14 of `bom/bom.csv` (USD 3 under the target)**. Making the design constructable added USD 28 (enclosure tube and floor plate, sockets with frames and flanges, the M8 speed socket and membrane vent, brake levers, the speed sensor plug, the harness branch, rivet nuts and fixings); it was USD 265 before MTC-DDR-003. The coil economizer module added USD 4 on 2026-10-02 (line 3). The reference hub motor (item 1, USD 70) is costed to each host, which brings a complete kit with motor to USD 367. The bench rig (item 15, USD 35) belongs to the prototype only and is not part of the kit. All prices are indicative. **R14: USD 3 under the value-engineering target.**
 
 ## 11. Results against requirements
 
@@ -158,23 +162,23 @@ Value-engineering target: USD 300 (`budget_usd`, a hypothetical control target, 
 
 | ID | Value | Target | Status |
 | --- | --- | --- | --- |
-| R2 | 250 W: 6.9 A; 350 W: 17.7 A; 750 W for 10 s: 21.9 A (SwapCell), 40.9 A (8S LFP) | 250 W reference; 350 W heavy; 750 W for 10 s | At risk (heavy case thermal, R9) |
-| R9 | 50.2 °C reference; 58.4 °C heavy on the walls, 60.0 °C on the floor plate (65 to 71 °C in sensitivity cases) | 60 °C at 40 °C ambient | At risk |
+| R2 | 250 W: 6.9 A; 350 W: 17.7 A; 750 W for 10 s: 21.9 A (SwapCell), 40.9 A (8S LFP) | 250 W reference; 350 W heavy; 750 W for 10 s | Met (paper) |
+| R9 | 47.0 °C reference; 55.6 °C heavy on the walls, 56.9 °C on the floor plate, with the coil economizer (62 to 68 °C in the sensitivity cases) | 60 °C at 40 °C ambient | Met (paper) |
 | R10 | XT90 not sealed (bench prototype only, decided 2026-10-02); sealed power connector evaluated on paper against IP67 mated, 40 A or more at 60 V DC; M12 and motor plug sealed when mated; vibration not analyzed | IP65; survive vibration | At risk |
 | R11 | Interface v0.2 decided on 2026-10-02: v0.1 as drawn (MTC-DWG-001 Rev P3) plus the M8 speed sensor socket (MTC-DDR-003 A1); fit time needs a timed fit | One keyed set; fit in 2 h | Not verifiable at TRL 3 |
 | R1 | Three host packs and CellGuard 16S (58.4 V) inside 20 to 60 V; 75 V controller; 18 to 75 V auxiliary buck | 20 to 60 V; 75 V transients | Met (design review) |
-| R3 | 67 ms worst case, 30 ms modeled; no firmware in the path | 100 ms | Met (paper) |
+| R3 | 74 ms worst case, 37 ms modeled; no firmware in the path | 100 ms | Met (paper) |
 | R4 | Key reset; supervisor enable conditions | No automatic restart | Met (design review) |
 | R5 | 75 ms | 200 ms | Met (paper) |
-| R6 | Period method; 5x margin over jitter; trip 0.60 to 0.70 s | 10 % for 0.5 s | Met (paper) |
+| R6 | Period method; 5x margin over jitter; trip 0.60 to 0.71 s | 10 % for 0.5 s | Met (paper) |
 | R7 | 170 ms worst | 200 ms | Met (paper) |
 | R8 | 0.55 A peak; 1.3 A at closure; ready in 0.6 s | Under 5 A; 1 s | Met |
-| R13 | MIT supervisor on its own processor; unmodified GPL-3.0 VESC firmware; CAN link only | Open hardware and firmware | Met (design review); written license review before any firmware is published |
-| R12 | 240 x 168 x 69 mm; 1.91 kg | 250 x 170 x 70 mm; 2.0 kg | Met (0.09 kg margin) |
-| R14 | USD 293 for items 2 to 14 | Value-engineering target USD 300 | USD 7 under the target (indicative prices) |
+| R13 | MIT supervisor on its own processor; unmodified GPL-3.0 VESC firmware; CAN link only | Open hardware and firmware | Met (design review); license boundary review written (MTC-DDR-005) |
+| R12 | 240 x 168 x 69 mm; 1.92 kg | 250 x 170 x 70 mm; 2.0 kg | Met (0.08 kg margin) |
+| R14 | USD 297 for items 2 to 14 | Value-engineering target USD 300 | USD 3 under the target (indicative prices) |
 
 ## 12. Checks against earlier documents
 
-The TRL 2 figures in MTC-PRC-001 v0.2, MTC-REQ-001 v0.2 and the README were checked against this script and corrected in v0.3: pack power 333 W to 322 W; reference current 7.1 A to 6.9 A; CargoMule current 9.3 A at 36 V to 8.4 A at 38.4 V (CargoMule uses a 12S LiFePO4 pack); controller loss 16 W to 3.9 W; reference case temperature 55 °C to 50 °C; 500 W case 67 °C to 68 °C (now information only); heavy case now 350 W and 58.5 °C; e-stop time about 60 ms to 67 ms worst case; precharge closure 0.5 s to 0.6 s; module envelope 250 x 170 x 66 mm to 243 x 168 x 66 mm; module mass 1.3 kg to 1.94 kg; kit mass 4.4 kg to 5.3 kg; cost $325 for the full kit to $265 for the MotionCore kit plus $70 for the reference motor ($335 with motor). The speed-sensor pulse rates (7.5 and 35 pulses per second) and the precharge peak (0.55 A, 1.5 J) stand. In v0.2 (MTC-DDR-002): R1 upper bound 58 V to 60 V; overvoltage fault 60 V to 66 V and bus peak 62.0 V to 67.8 V; fuse rating 58 V DC to 60 V DC or more; direct-drive back-EMF limit 1.29 to 1.25 times no-load speed; R12 limit 1.5 kg to 2.0 kg, status not met to met. In v0.3 (MTC-DDR-003): fins 4 mm to 3 mm and full height; envelope 243 x 168 x 66 mm to 240 x 168 x 69 mm; module mass 1.94 kg to 1.91 kg; heavy case 58.5 °C to 58.4 °C on the walls, with a new floor plate figure of 60.0 °C; kit cost $265 to USD 293; R14 reported against the value-engineering target.
+The TRL 2 figures in MTC-PRC-001 v0.2, MTC-REQ-001 v0.2 and the README were checked against this script and corrected in v0.3: pack power 333 W to 322 W; reference current 7.1 A to 6.9 A; CargoMule current 9.3 A at 36 V to 8.4 A at 38.4 V (CargoMule uses a 12S LiFePO4 pack); controller loss 16 W to 3.9 W; reference case temperature 55 °C to 50 °C; 500 W case 67 °C to 68 °C (now information only); heavy case now 350 W and 58.5 °C; e-stop time about 60 ms to 67 ms worst case; precharge closure 0.5 s to 0.6 s; module envelope 250 x 170 x 66 mm to 243 x 168 x 66 mm; module mass 1.3 kg to 1.94 kg; kit mass 4.4 kg to 5.3 kg; cost $325 for the full kit to $265 for the MotionCore kit plus $70 for the reference motor ($335 with motor). The speed-sensor pulse rates (7.5 and 35 pulses per second) and the precharge peak (0.55 A, 1.5 J) stand. In v0.2 (MTC-DDR-002): R1 upper bound 58 V to 60 V; overvoltage fault 60 V to 66 V and bus peak 62.0 V to 67.8 V; fuse rating 58 V DC to 60 V DC or more; direct-drive back-EMF limit 1.29 to 1.25 times no-load speed; R12 limit 1.5 kg to 2.0 kg, status not met to met. In v0.3 (MTC-DDR-003): fins 4 mm to 3 mm and full height; envelope 243 x 168 x 66 mm to 240 x 168 x 69 mm; module mass 1.94 kg to 1.91 kg; heavy case 58.5 °C to 58.4 °C on the walls, with a new floor plate figure of 60.0 °C; kit cost $265 to USD 293; R14 reported against the value-engineering target. In v0.5 (coil economizer, 2026-10-02): reference case 50.2 °C to 47.0 °C and heavy case 58.4 °C to 55.6 °C on the walls, floor plate 60.0 °C to 56.9 °C; e-stop worst case 67 ms to 74 ms; module mass 1.91 kg to 1.92 kg; kit cost USD 293 to USD 297; R2 and R9 from at risk to met on paper.
 
 > **Safety:** These are paper estimates for a module that switches a lithium pack able to deliver several hundred amperes into a short and drives moving machinery. They do not replace a circuit review, datasheet checks or testing of the safety functions. Nothing may be built or energized from this note; building and testing are TRL 4 work and on hold by Amish's instruction. The build plan MTC-BLD-001 carries the safety stops for the first build.

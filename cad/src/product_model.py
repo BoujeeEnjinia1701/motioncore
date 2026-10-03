@@ -33,7 +33,7 @@ sys.path.insert(0, str(Path(__file__).resolve().parent))
 
 from build123d import (Axis, Box, Compound, Cylinder, Plane, Pos, RegularPolygon, Rot, Solid, Sphere, Vector,
                        extrude, fillet)
-from model import PARAMS, envelope  # noqa: F401  (envelope kept for callers that want it)
+from model import PARAMS, envelope, build_components, derived  # noqa: F401
 
 TITLE = "MotionCore: drive controller and safety module with e-stop and reference hub motor"
 
@@ -218,11 +218,12 @@ def product_parts(P=PARAMS):
     body += _union(fins)
     # M6 bosses and insert bores (host interface, as model.py)
     mx, my = P["mount_px"] / 2, P["mount_py"] / 2
-    for sx in (-1, 1):
-        for sy in (-1, 1):
-            body += _zcyl(sx * mx, sy * my, fl + 4, 6, 8)
-            body -= _zcyl(sx * mx, sy * my, z0 + 5, 2.5, 12)
+    CM = build_components(P)            # fixed hardware is taken straight from the model
+    # floor plate joint: a shallow groove where the plate meets the tube (floor plate 3 mm, model.py)
+    body -= _bx(-L / 2 - 2, L / 2 + 2, -W / 2 - 2, W / 2 + 2, z0 + P["floor_t"] - 0.4, z0 + P["floor_t"] + 0.3) \
+        - _bx(-L / 2 + 0.5, L / 2 - 0.5, -W / 2 + 0.5, W / 2 - 0.5, z0, top)
     add("Enclosure body, finned aluminum", body, C_ALU, "metal", 6, "shell", (0, 0, 0))
+    add("M6 closed-end rivet nuts", CM["rivnuts"].shape, C_STEEL, "metal", 14, "shell", (0, 0, -20))
 
     gasket = _rbx(-L / 2 + 0.6, L / 2 - 0.6, -W / 2 + 0.6, W / 2 - 0.6, top - 0.9, top, R_OUT - 0.6) \
         - _rbx(-L / 2 + T, L / 2 - T, -W / 2 + T, W / 2 - T, top - 2, top + 1, R_OUT - T)
@@ -240,7 +241,7 @@ def product_parts(P=PARAMS):
     EL = (0, 0, 150)
     lid = _rbx(-L / 2, L / 2, -W / 2, W / 2, top, top + lt, R_OUT, top=1.2)
     lid += _bx(-L / 2 + T + 1, L / 2 - T - 1, -W / 2 + T + 1, W / 2 - T - 1, top - 3, top)   # gasket lip
-    wx0, wx1, wy0, wy1 = -85.0, 90.0, -42.0, 42.0
+    wx0, wx1, wy0, wy1 = -85.0, 90.0, -52.0, 52.0   # render-only window (MTC-DEC-001, 2026-10-02); wide enough to show the supervisor board and economizer
     lid -= _rbx(wx0 - 3, wx1 + 3, wy0 - 3, wy1 + 3, top + lt - 1.5, top + lt + 1, 7.0)       # pane recess
     lid -= _rbx(wx0, wx1, wy0, wy1, top - 4, top + lt + 1, 5.0)                              # window opening
     add("Enclosure lid", lid, C_ALU_LID, "metal", 7, "shell", EL)
@@ -248,12 +249,7 @@ def product_parts(P=PARAMS):
     add("Clear polycarbonate inspection window", pane, C_WINDOW, "clear", 7, "shell", (0, 0, 175))
 
     zt = top + lt
-    scr = []
-    for (x, y) in [(-100, -60), (-100, 60), (100, -60), (100, 60), (-100, 0), (100, 0)]:
-        s = _zcyl(x, y, zt + 0.6, 3.0, 1.2)
-        s = _fillet_try(s, _top(s), [0.6, 0.3])
-        s -= _box(x, y, zt + 1.2, 3.6, 0.8, 1.0) + _box(x, y, zt + 1.2, 0.8, 3.6, 1.0)
-        scr.append(s)
+    scr = [CM["lid_screws"].shape]          # button-head screws in the corner ports, as the model
     add("Lid screws, stainless", _union(scr), C_STEEL, "metal", 7, "shell", (0, 0, 210))
 
     plate = _rbx(-55, 55, -57, -46, zt, zt + 0.5, 1.5)
@@ -287,17 +283,19 @@ def product_parts(P=PARAMS):
     sx0, sx1, sy0, sy1, szb, sh = P["supervisor"]
     ES = (0, 0, 110)
     sz = fl + szb
-    stand = _union([_hex_z(x, y, (fl + sz) / 2, 6.0, sz - fl) for x in (sx0 + 7, sx1 - 7) for y in (sy0 + 7, sy1 - 7)])
+    stand = _union([_hex_z(x, y, (fl + sz) / 2, 6.0, sz - fl) for x, y in P["sup_standoffs"]])
     add("Supervisor standoffs", stand, C_BRASS, "metal", 3, "internal", (0, 0, 80))
     sb = _rbx(sx0, sx1, sy0, sy1, sz, sz + 1.6, 2.0)
-    for x in (sx0 + 7, sx1 - 7):
-        for y in (sy0 + 7, sy1 - 7):
-            sb -= _zcyl(x, y, sz + 0.8, 1.7, 3)
+    for x, y in P["sup_standoffs"]:
+        sb -= _zcyl(x, y, sz + 0.8, 1.7, 3)
     add("Safety supervisor board", sb, C_PCB, "plastic", 3, "internal", ES)
     s1 = sz + 1.6
     chips = (_bx(-60, -48, -6, 6, s1, s1 + 1.6) + _bx(-40, -33, 8, 13, s1, s1 + 1.4) + _bx(-40, -33, -13, -8, s1, s1 + 1.4)
              + _bx(-85, -70, 10, 24, s1, s1 + 6) + _bx(-30, -18, -26, -16, s1, s1 + 3))
     add("Supervisor MCU, CAN transceivers and buck", chips, C_CHIP, "plastic", 3, "internal", ES)
+    ex0, ex1, ey0, ey1, eh = P["economizer"]
+    econ = _bx(ex0, ex1, ey0, ey1, s1, s1 + eh)
+    add("Coil economizer module", econ, C_PCB_CTRL, "plastic", 3, "internal", ES)
     usb = _bx(-95.5, -87, -5, 5, s1, s1 + 3.2)
     usb = _fillet_try(usb, usb.edges().filter_by(Axis.X), [1.2, 0.8])
     add("Supervisor USB fault-log port", usb, C_STEEL, "metal", 3, "internal", ES)
@@ -312,7 +310,8 @@ def product_parts(P=PARAMS):
     kbody = _rbx(kx0, kx1, ky0, ky1, fl + 2, fl + kh, 6.0, top=2.0)
     kbody += _rbx(kx0 + 7, kx1 - 7, ky0 - 8, ky0 + 1, fl + 30, fl + 42, 2.0, top=1.0)
     add("Main DC contactor", kbody, C_BLACK, "plastic", 4, "internal", EK)
-    kfoot = _rbx(kx0 - 5, kx1 + 5, -16, 16, fl, fl + 2, 3.0)
+    cf0, cf1, cfy0, cfy1 = P["contactor_foot"]
+    kfoot = _rbx(cf0, cf1, cfy0, cfy1, fl, fl + 3, 3.0)
     add("Contactor mounting foot", kfoot, C_STEEL, "metal", 4, "internal", EK)
     studs = []
     for x in (kx0 + 13, kx1 - 13):
@@ -325,33 +324,27 @@ def product_parts(P=PARAMS):
     # 5 precharge resistor and fuse holder with blade fuse
     fx0, fx1, fy0, fy1, fzb, fh = P["fuseblock"]
     EF = (0, 0, 55)
-    res = _bx(fx0 + 1, fx1 - 1, fy0 + 1, -5, fl, fl + 14)
+    rm = fy0 + 14.0                 # resistor in the first 14 mm of the block along Y, fuse holder beside it
+    res = _bx(fx0 + 1, fx1 - 1, fy0 + 1, rm, fl, fl + 14)
     for k in range(4):
         res -= _bx(fx0, fx1, fy0 + 1 - 0.1, fy0 + 3, fl + 3 + 3 * k, fl + 4.2 + 3 * k)
-        res -= _bx(fx0, fx1, -7, -4.9, fl + 3 + 3 * k, fl + 4.2 + 3 * k)
+        res -= _bx(fx0, fx1, rm - 2.0, rm + 0.1, fl + 3 + 3 * k, fl + 4.2 + 3 * k)
     add("Precharge resistor, aluminum clad", res, C_BRASS, "metal", 5, "internal", EF)
-    fh_ = _rbx(fx0 + 1, fx1 - 1, 1, fy1 - 1, fl, fl + fh - 6, 2.0, top=1.0)
+    fh_ = _rbx(fx0 + 1, fx1 - 1, rm + 2.0, fy1 - 1, fl, fl + fh - 6, 2.0, top=1.0)
     add("Fuse holder", fh_, C_BLACK, "plastic", 5, "internal", EF)
-    fuse = _rbx(fx0 + 8, fx1 - 8, 9, 17, fl + fh - 6, fl + fh, 1.0)
+    fuse = _rbx(fx0 + 8, fx1 - 8, rm + 6.0, rm + 14.0, fl + fh - 6, fl + fh, 1.0)
     add("Main blade fuse", fuse, C_YELLOW2, "plastic", 5, "internal", EF)
 
     # ------------------------------------------------------------ connector panel (BOM 8)
     PX = L / 2
-    pt, cln, cz = P["panel_t"], P["conn_len"], z0 + P["conn_z"]
+    cln, cz = P["conn_len"], derived(P)["cz"]
     EP = (70, 0, 0)
-    pw = P["panel_w"]
-    panel = _bx(PX, PX + pt, -pw / 2, pw / 2, z0 + P["panel_z0"], z0 + P["panel_z1"])
-    panel = _fillet_try(panel, panel.edges().filter_by(Axis.X), [3.0, 2.0])
-    panel = _fillet_try(panel, _xmax(panel), [0.8, 0.5])
-    add("Connector panel plate", panel, C_PANEL, "painted", 8, "shell", EP)
-    xf = PX + pt
-    pscr = []
-    for y in (-pw / 2 + 5, pw / 2 - 5):
-        for z in (z0 + P["panel_z0"] + 5, z0 + P["panel_z1"] - 5):
-            s = _xcyl(xf + 0.5, y, z, 2.2, 1.0)
-            s -= _box(xf + 1.0, y, z, 1.0, 3.0, 0.6)
-            pscr.append(s)
-    add("Panel screws", _union(pscr), C_STEEL, "metal", 8, "shell", EP)
+    xf = PX                      # sockets go straight through the end wall (no panel plate); flanges on the wall
+    (_, ym0, _), (_, ys0, _), (_, yc0, _) = P["conns"]
+    f_ = P["m12_flange"]
+    flg = _union([_bx(xf, xf + 2.5, yy - f_ / 2, yy + f_ / 2, cz - f_ / 2, cz + f_ / 2) for yy in (ys0, yc0)])
+    flg += _xcyl(xf + 1.5, ym0, cz, P["motor_flange"], 3)
+    add("Socket flanges", flg, C_PANEL, "painted", 8, "shell", EP)
 
     y, w, h = P["xt90"]
     xt = _bx(xf, xf + cln, y - w / 2, y + w / 2, cz - h / 2, cz + h / 2)
@@ -386,8 +379,8 @@ def product_parts(P=PARAMS):
     add("Command coding ring", _xcyl(xf + 4.8, yc, cz, rc + 0.5, 1.6), C_ACCENT, "painted", 8, "shell", EP)
 
     vz = z0 + P["panel_z1"] - 7
-    vent = _hex_x(xf + 1.5, -36, vz, 10.0, 3.0) + (Pos(xf + 3, -36, vz) * Sphere(4.0) & _bx(xf + 3, xf + 8, -41, -31, vz - 5, vz + 5))
-    add("Pressure-equalizing vent plug", vent, C_DARK, "plastic", 8, "shell", EP)
+    add("Pressure-equalizing vent patch", CM["vent"].shape, C_DARK, "plastic", 8, "shell", EP)
+    add("Speed sensor socket, M8", CM["speed_socket"].shape, C_STEEL, "metal", 8, "shell", (0, -40, 0))
 
     for yy, col, mat, nm in [(18.0, C_LED_G, "emissive", "Ready light, green (lit)"),
                              (30.0, C_LED_R, "plastic", "Fault light, red")]:
@@ -396,9 +389,6 @@ def product_parts(P=PARAMS):
         dome = _xcyl(xf + 1.6, yy, vz, 2.4, 1.2) + (Pos(xf + 2.2, yy, vz) * Sphere(2.4) & _bx(xf + 2.2, xf + 5, yy - 3, yy + 3, vz - 3, vz + 3))
         add(nm, dome, col, mat, 3, "shell", EP)
 
-    lz = z0 + P["panel_z0"] + 3.5
-    legend = _union([_bx(xf, xf + 0.3, yy - 5, yy + 5, lz - 0.8, lz + 0.8) for yy in (y, ym, ys, yc)])
-    add("Panel legends", legend, C_LABEL, "paper", 8, "shell", EP)
 
     # ------------------------------------------------------------ reference hub motor (BOM 1)
     MR, MW = P["motor_d"] / 2, P["motor_w"]

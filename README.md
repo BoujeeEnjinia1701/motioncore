@@ -60,7 +60,7 @@ A standard controller and safety module (open motor controller, e-stop, speed li
 
 A finned module, 240 x 168 x 69 mm, holds an open VESC-class controller, a safety supervisor, a DC contactor and a precharge and fuse block. The emergency stop opens the contactor through a hardwired loop that works without any firmware, the speed limit is checked twice (controller and supervisor, each with its own speed signal), and the drive never restarts until the operator resets it. It runs from 20 to 60 V packs (24, 36 and 48 V classes), including SwapCell and CellGuard-managed 16S LiFePO4, and reads SwapCell or CellGuard faults over CAN.
 
-The TRL 3 sizing note (MTC-CAL-001) gives, on paper: 250 W continuous at 40 °C ambient with about 50 °C on the case; 350 W on 24 V packs at about 58.5 °C, close to the 60 °C limit (at risk); motor power removed within 67 ms of an e-stop in the worst case; and an estimated MotionCore kit cost of USD 293 against a value-engineering target of USD 300 (USD 7 under), with the USD 70 reference motor costed to each host. The module weighs about 1.91 kg, inside its 2.0 kg limit. All figures are estimates, not measurements.
+The TRL 3 sizing note (MTC-CAL-001) gives, on paper: 250 W continuous at 40 °C ambient with about 47 °C on the case; 350 W on 24 V packs at about 56 °C, under the 60 °C limit thanks to a contactor coil economizer; motor power removed within 74 ms of an e-stop in the worst case; and an estimated MotionCore kit cost of USD 297 against a value-engineering target of USD 300 (USD 3 under), with the USD 70 reference motor costed to each host. The module weighs about 1.92 kg, inside its 2.0 kg limit. All figures are estimates, not measurements.
 
 Full design precis: [docs/02-concept.md](docs/02-concept.md)
 

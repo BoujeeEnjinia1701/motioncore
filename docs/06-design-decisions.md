@@ -3,7 +3,7 @@ doc_id: MTC-DEC-001
 title: MotionCore design decisions register
 project: MotionCore
 doc_type: Design decisions register
-version: "0.2"
+version: "0.3"
 status: Draft
 date: '2026-10-02'
 author: Amish Chadha
@@ -17,6 +17,10 @@ revisions:
     date: '2026-10-02'
     author: Amish Chadha
     change: "Amish approved the recommendations for open decisions 1 to 9 (2026-10-02); moved to decisions made (MTC-DDR-003 accepted)"
+  - version: "0.3"
+    date: '2026-10-02'
+    author: Amish Chadha
+    change: 'Follow-ups carried out: economizer in BOM and model (kit USD 297); sealed connector evaluation and license boundary review written (MTC-DDR-004, MTC-DDR-005); item to confirm for the connector part'
 ---
 
 # MotionCore design decisions register
@@ -39,12 +43,15 @@ None. All open decisions were decided on 2026-10-02.
 | 6 | The M12 sockets come with 20 mm four-screw square flanges and the XT90 with a two-screw panel frame | Sets the end wall holes | MTC-DDR-003, P5 |
 | 7 | The prospective short-circuit current of a CellGuard 16S pack against the fuse's 1 kA breaking capacity | Fuse choice for CellGuard hosts | MTC-CAL-001 section 3 |
 | 8 | Whether a SwapCell pack in legacy discharge accepts a heartbeat and moves to mode 2 without opening its output | The supervisor is powered from the pack | `docs/REVIEW.md`, cross-repo actions |
+| 9 | The sealed power connector part: the evaluation (MTC-DDR-004) recommends an industrial IP67 single-pole pair; check one named part's datasheet against the rule (keyed, IP67 mated, 40 A or more at 60 V DC, no exposed live contact), then change the end wall holes, socket frame and BOM line 8 | Sets R10 and the end wall of the tube | MTC-DDR-004 |
+| 10 | The coil economizer module: a 12 V, 1 A part with full voltage for 0.5 s, then about 1 W hold and an output capacitor of 100 uF or less | Sets the 1 W hold figure of R9 and the 74 ms of R3 | MTC-CAL-001 v0.5 |
 
 ## Value engineering
 
-Value-engineering target: USD 300 (a hypothetical control target, not a limit). Estimated cost of the constructable design: USD 293 for the MotionCore kit, items 2 to 14 (USD 7 under the target). The reference hub motor (USD 70) is costed to each host, and the bench rig (USD 35) belongs to the prototype only. Main cost drivers and savings worth trying:
+Value-engineering target: USD 300 (a hypothetical control target, not a limit). Estimated cost of the constructable design: USD 297 for the MotionCore kit, items 2 to 14 (USD 3 under the target). The reference hub motor (USD 70) is costed to each host, and the bench rig (USD 35) belongs to the prototype only. Main cost drivers and savings worth trying:
 
-- The largest lines are the controller (USD 85), the enclosure tube and floor plate (USD 30), the supervisor (USD 30), the contactor (USD 25) and the connector set (USD 24).
+- The largest lines are the controller (USD 85), the enclosure tube and floor plate (USD 30), the supervisor with its coil economizer (USD 34), the contactor (USD 25) and the connector set (USD 24).
+- The contactor coil economizer (decided 2026-10-02) added USD 4 to the supervisor line.
 - Making the design constructable added USD 28: the enclosure tube and floor plate (USD 8 more), the sockets with flanges and frames, the M8 speed socket and the membrane vent (USD 6), brake levers in place of bare switches (USD 6), the speed sensor's plug (USD 2), the harness branch (USD 2) and rivet nuts and fixings (USD 4).
 - Savings worth trying: a stock finned extrusion close to the drawn size rather than a custom one; buying the motor, the brake levers and the pod as one e-bike kit; and, once the interface is settled, laying the supervisor out on one small circuit board in place of modules on a carrier board (TRL 4 work).
 

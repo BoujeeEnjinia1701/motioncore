@@ -42,7 +42,8 @@ PARAMS = {
     "vent_z": 46.0,                         # adhesive membrane vent on the -X end wall
     # Internal parts (x0, x1, y0, y1, z0 above the floor top, height)
     "controller": (-100.0, 0.0, -35.0, 25.0, 1.0, 24.0),   # VESC class, 75 V stage, on a 1 mm thermal pad
-    "supervisor": (-95.0, -10.0, -50.0, 38.0, 35.0, 10.0),  # board on 35 mm standoffs, outside the controller
+    "supervisor": (-95.0, -10.0, -50.0, 58.0, 35.0, 10.0),  # board on 35 mm standoffs, outside the controller; 20 mm longer on +Y for the economizer (MTC-DEC-001, 2026-10-02)
+    "economizer": (-86.0, -62.0, 41.0, 55.0, 8.0),          # coil economizer module on the carrier board: x0, x1, y0, y1, height above the board
     "sup_standoffs": [(-80.0, -44.0), (-20.0, -44.0), (-80.0, 32.0), (-20.0, 32.0)],
     "contactor": (15.0, 65.0, -22.0, 22.0, 3.0, 45.0),     # on a 3 mm mounting foot
     "contactor_foot": (5.0, 75.0, -12.0, 12.0),
@@ -244,7 +245,9 @@ def build_components(p=PARAMS):
     sx0, sx1, sy0, sy1, szb, sh = p["supervisor"]
     so = fuse([hexprism("z", x, y, zt + szb / 2, 5.5, szb) for x, y in p["sup_standoffs"]])
     add("standoffs", "Supervisor standoffs, 35 mm (4)", so, 14, "bought", COL["stand"])
-    sup = bx(sx0, sx1, sy0, sy1, zt + szb, zt + szb + 1.6) + bx(sx0 + 6, sx1 - 6, sy0 + 10, sy1 - 10, zt + szb + 1.6, zt + szb + sh)
+    ex0, ex1, ey0, ey1, eh = p["economizer"]
+    sup = (bx(sx0, sx1, sy0, sy1, zt + szb, zt + szb + 1.6) + bx(sx0 + 6, sx1 - 6, sy0 + 10, sy1 - 30, zt + szb + 1.6, zt + szb + sh)
+           + bx(ex0, ex1, ey0, ey1, zt + szb + 1.6, zt + szb + 1.6 + eh))
     add("sup", "Safety supervisor board", sup, 3, "made", COL["sup"])
 
     # ---- 7 contactor on its foot
@@ -620,6 +623,17 @@ def checks(p=PARAMS):
     chk("Fuse block on the floor plate", S("fuse"), S("floor"), "touch")
     chk("Supervisor standoffs clear of the controller", S("standoffs"), S("ctrl"), 3.0)
     chk("Supervisor board clear of the controller", S("sup"), S("ctrl"), 5.0)
+    D_ = derived(p)
+    ex0, ex1, ey0, ey1, eh = p["economizer"]
+    szb_ = p["supervisor"][4]
+    econ = bx(ex0, ex1, ey0, ey1, D_["z_tube"] + szb_ + 1.6, D_["z_tube"] + szb_ + 1.6 + eh)
+    sx0_, sx1_, sy0_, sy1_ = p["supervisor"][:4]
+    board_ = bx(sx0_, sx1_, sy0_, sy1_, D_["z_tube"] + szb_, D_["z_tube"] + szb_ + 1.6)
+    chk("Coil economizer module sits on the carrier board", econ, board_, "touch")
+    chk("Coil economizer module clear of the tube walls", econ, S("tube"), 5.0)
+    chk("Coil economizer module clear of the lid", econ, S("lid") + S("gasket"), 5.0)
+    chk("Coil economizer module clear of the contactor", econ, S("cont"), 5.0)
+    chk("Coil economizer module clear of the standoffs", econ, S("standoffs"), 3.0)
     for i, a in enumerate(("ctrl", "sup", "cont", "fuse")):
         chk(f"{C[a].name} clear of the tube walls", S(a), S("tube"), 3.0)
         chk(f"{C[a].name} clear of the lid", S(a), S("lid") + S("gasket"), 5.0)

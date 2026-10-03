@@ -3,7 +3,7 @@ doc_id: MTC-PRC-001
 title: MotionCore design precis
 project: MotionCore
 doc_type: Design precis
-version: "0.6"
+version: "0.7"
 status: Draft
 date: '2026-10-02'
 author: Amish Chadha
@@ -33,6 +33,10 @@ revisions:
   date: '2026-10-02'
   author: Amish Chadha
   change: "Decisions of 2026-10-02: MTC-DDR-003 accepted; interface v0.2; economizer; sealed connector rule; dual-motor and brushed hosts; license review timing"
+- version: "0.7"
+  date: '2026-10-02'
+  author: Amish Chadha
+  change: 'Interface v0.2 issued (speed socket, pin-out, host arrangements); coil economizer in the design; R2 and R9 met on paper; figures per MTC-CAL-001 v0.5'
 ---
 
 # MotionCore design precis
@@ -41,7 +45,7 @@ revisions:
 
 MotionCore is a finned aluminum module, 240 x 168 x 69 mm, that sits between a host's battery pack and its motor. Inside are an open VESC-class motor controller, a small safety supervisor board, a DC contactor and a precharge and fuse block. Outside, one keyed connector set on its end wall links it to a named reference 250 W geared hub motor, a twin-channel emergency stop, two brake switches, a key and throttle pod and an independent speed sensor. The emergency stop opens the contactor through a hardwired loop, so it works even if both processors fail. The speed limit is held twice: once in the controller and once in the supervisor, which reads its own sensor.
 
-The TRL 3 sizing note (MTC-CAL-001) gives, on paper: 6.9 A from a SwapCell pack in the reference case, about 50 °C on the case, motor power removed within 67 ms of an e-stop (worst case), and an estimated MotionCore kit cost of USD 293 against a value-engineering target of USD 300 (USD 7 under), with the USD 70 reference motor costed to each host. The module weighs about 1.91 kg, inside the 2.0 kg limit Amish set in place of 1.5 kg (R12 met, 0.09 kg margin), and the 350 W heavy case on a 24 V pack runs close to the 60 °C case limit (R9 at risk). The design was made buildable in MTC-DDR-003 (Draft, open for Amish's review) without changing what it does; the prototype build plan is MTC-BLD-001. The design choices below were decided by Amish on 2026-09-25, going with the recommendations (MTC-DDR-001 and MTC-DDR-002).
+The TRL 3 sizing note (MTC-CAL-001) gives, on paper: 6.9 A from a SwapCell pack in the reference case, about 47 °C on the case, motor power removed within 74 ms of an e-stop (worst case), and an estimated MotionCore kit cost of USD 297 against a value-engineering target of USD 300 (USD 3 under), with the USD 70 reference motor costed to each host. The module weighs about 1.92 kg, inside the 2.0 kg limit Amish set in place of 1.5 kg (R12 met, 0.08 kg margin), and the 350 W heavy case on a 24 V pack stays under the 60 °C case limit (about 55.6 °C) because a coil economizer holds the contactor at about 1 W (R9 met on paper, in shade). The design was made buildable in MTC-DDR-003 (Draft, open for Amish's review) without changing what it does; the prototype build plan is MTC-BLD-001. The design choices below were decided by Amish on 2026-09-25, going with the recommendations (MTC-DDR-001 and MTC-DDR-002).
 
 ![MotionCore concept](../media/hero.png)
 
@@ -84,18 +88,43 @@ The TRL 3 sizing note (MTC-CAL-001) gives, on paper: 6.9 A from a SwapCell pack 
 
 *Figure 3. Cutaway through the module: supervisor board on standoffs above the controller (left), contactor (center) and precharge and fuse block (right).*
 
-### Interface (MotionCore interface v0.1)
+### Interface (MotionCore interface v0.2)
 
-*Table 2. Connector set in the +X end wall (item 8), from the socket side. Decided by Amish, 2026-09-25 (MTC-DDR-001 item 6); interface v0.2 adds the M8 speed socket in the side wall (decided 2026-10-02, MTC-DDR-003 A1). The XT90 power connector is for the bench prototype only until the sealed connector evaluation is done (MTC-DDR-002; MTC-DEC-001).*
+*Table 2. Connector set (item 8). Interface v0.2 was issued on 2026-10-02 (decided by Amish, MTC-DDR-003 A1): the four sockets of v0.1 (decided 2026-09-25, MTC-DDR-001 item 6) in the +X end wall, seen from the socket side, plus an M8 4-pin speed socket in the side wall. The power connector is a sealed single-pole pair, part to be chosen (MTC-DDR-004); the XT90 shown is for the bench prototype only.*
 
 | Connector | Type | Lines |
 | --- | --- | --- |
-| Power in | XT90 anti-spark plug (provisional, not sealed) | Pack positive and negative, 20 to 60 V |
+| Power in | XT90 anti-spark plug (bench prototype only; sealed single-pole pair to follow, MTC-DDR-004) | Pack positive and negative, 20 to 60 V |
 | Motor | 9-pin waterproof e-bike motor plug | Three phases, Hall sensors, motor temperature |
 | Safety loop | M12 8-pin A-coded | E-stop channels A and B, brake switches A and B, enable key, brake coil output |
 | Command | M12 5-pin B-coded, so it cannot mate with the safety loop | Throttle or pedal-assist, CAN high and low (external bus, 250 kbit/s), 5 V, ground |
+| Speed | M8 4-pin A-coded, in the side wall | 5 V, ground, speed pulses from the independent speed sensor |
 
-The module mounts on four M6 studs on a 180 x 100 mm pattern through rubber isolation pads (drawing MTC-DWG-001). The command connector carries the external CAN bus to a SwapCell pack or a CellGuard BMS; the controller sits on a separate internal bus. The SwapCell INTERLOCK coding resistor belongs in the host's pack receptacle, not in MotionCore.
+*Table 2a. Pin-out of the three signal sockets (as build plan Table 3).*
+
+| Socket | Pin | Line |
+| --- | --- | --- |
+| Safety loop (M12, 8-pin A) | 1 | Loop supply, 12 V out to e-stop channel A |
+| | 2 | Loop return, after e-stop channel A and the key, to the contactor coil |
+| | 3 | E-stop channel B (to ground when the e-stop is not pressed) |
+| | 4 | Brake switch A (to ground when the lever is released) |
+| | 5 | Brake switch B (to ground when the lever is released) |
+| | 6 | Brake coil output, 12 V, for a host's spring-applied brake; live only while the loop is closed |
+| | 7 | Ground |
+| | 8 | Not connected |
+| Command (M12, 5-pin B) | 1 | +5 V for the throttle |
+| | 2 | Throttle signal, 0.8 to 4.2 V |
+| | 3 | Ground |
+| | 4 | CAN high, external bus |
+| | 5 | CAN low, external bus |
+| Speed (M8, 4-pin A) | 1 | +5 V |
+| | 2 | Not connected |
+| | 3 | Ground |
+| | 4 | Speed pulses |
+
+The module mounts on four M6 studs on a 180 x 100 mm pattern through rubber isolation pads (drawing MTC-DWG-001). The command connector carries the external CAN bus to a SwapCell pack or a CellGuard BMS; the controller sits on a separate internal bus. The SwapCell INTERLOCK coding resistor belongs in the host's pack receptacle, not in MotionCore. Interface v0.2 has five sockets, which is one more than v0.1: CargoMule, the first host, is told of the speed socket (see the review note).
+
+*Host arrangements (decided 2026-10-02).* Dual-motor hosts such as PalletPilot fit two controllers on one supervisor, with one safety loop and one contactor feeding both controllers. Brushed-motor hosts such as StepClimber use the VESC-class controller's DC motor mode, and need a different power stage only if the motor needs more current than the controller is rated for.
 
 ## Numbers (MTC-CAL-001)
 
@@ -111,7 +140,7 @@ At 250 W shaft power the pack supplies about 322 W: 6.9 A at 46.8 V (SwapCell) a
 
 ### Emergency stop timing
 
-The e-stop contacts open the coil circuit directly. With a 24 V Zener across the coil, the modeled time to remove motor power is about 30 ms; using the 50 ms release limit that the contactor must meet, the worst case is about 67 ms, inside the 100 ms target of R3. In 67 ms a host at 25 km/h (6.9 m/s) travels about 47 cm and a walk-behind machine at 1.5 m/s about 10 cm. After that the host stops on its own brakes. A plain diode suppressor would lengthen the release; the Zener is part of the design.
+The e-stop contacts open the coil circuit directly. With a 24 V Zener across the coil, the modeled time to remove motor power is about 37 ms; using the 50 ms release limit that the contactor must meet, the worst case is about 74 ms, inside the 100 ms target of R3. In 74 ms a host at 25 km/h (6.9 m/s) travels about 52 cm and a walk-behind machine at 1.5 m/s about 11 cm. After that the host stops on its own brakes. A plain diode suppressor would lengthen the release; the Zener is part of the design.
 
 ### Precharge
 
@@ -119,11 +148,11 @@ With about 1,000 µF of bus capacitance and a 100 Ω resistor, the time constant
 
 ### Thermal
 
-The enclosure sheds about 1.17 W per kelvin of rise in still air (clear anodized, shaded).
+The enclosure sheds about 1.16 W per kelvin of rise in still air (clear anodized, shaded).
 
-- **Reference case:** about 10 W of heat (controller 4 W, auxiliary supply and coil 5.4 W, power path 0.4 W at minimum pack voltage): about 50 °C at 40 °C ambient. R9 met.
-- **Heavy case at 350 W:** about 20 W, about 58.4 °C on the walls and 60.0 °C on the floor plate, which joins the finned tube through a sealant film (MTC-CAL-001 v0.3). Met with little or no margin, which disappears if the controller runs hotter than modeled (65 to 71 °C in the sensitivity cases), so R9 is **at risk**. At 500 W the case would reach about 68 °C, which is why the heavy case is derated.
-- The contactor coil is about half of the reference-case heat. A coil economizer, decided on 2026-10-02, lowers the heavy case to about 56 °C; it is wired so the safety loop breaks the coil supply upstream of it, so a stop still drops the contactor within the 50 ms the e-stop timing assumes.
+- **Reference case:** about 6.5 W of heat in steady state (controller 4.2 W, auxiliary supply and held coil 1.9 W, power path 0.4 W at minimum pack voltage): about 47 °C at 40 °C ambient. R9 met.
+- **Heavy case at 350 W:** about 16.5 W, about 55.6 °C on the walls and 56.9 °C on the floor plate, which joins the finned tube through a sealant film (MTC-CAL-001 v0.5). Met with about 4 K of margin on the walls, which would go if the controller runs hotter than modeled (62 to 68 °C in the sensitivity cases); R9 is **met on paper**, in shade. At 500 W the case would reach about 65 °C, which is why the heavy case is derated.
+- **Coil economizer.** The contactor coil takes 4 W and was about half of the reference-case heat. An economizer module on the supervisor carrier board (BOM line 3), decided on 2026-10-02, applies full voltage for 0.5 s and then holds the coil at about 1 W. It is wired so the safety loop breaks the coil supply upstream of it, so a stop still drops the contactor within the 50 ms the e-stop timing assumes; its output capacitor is limited to 100 uF and the 74 ms worst case includes it.
 
 ### Speed sensing
 
@@ -135,8 +164,8 @@ The internal bus (supervisor and controller, 500 kbit/s) runs at about 11 % load
 
 ### Size, mass and cost
 
-- Module: 240 x 168 x 69 mm; about 1.91 kg, of which the enclosure metal is about 1.0 kg. R12 (2.0 kg, relaxed from 1.5 kg by MTC-DDR-002) is met with 0.09 kg of margin. Kit: about 5.2 kg with the reference motor, 2.8 kg without.
-- Cost: value-engineering target USD 300. Estimated cost of the constructable MotionCore kit (BOM items 2 to 14): USD 293 (USD 7 under the target); the reference motor adds USD 70 and is costed to each host, and the prototype's bench rig USD 35 (`bom/bom.csv`).
+- Module: 240 x 168 x 69 mm; about 1.92 kg, of which the enclosure metal is about 1.0 kg. R12 (2.0 kg, relaxed from 1.5 kg by MTC-DDR-002) is met with 0.08 kg of margin. Kit: about 5.3 kg with the reference motor, 2.9 kg without.
+- Cost: value-engineering target USD 300. Estimated cost of the constructable MotionCore kit (BOM items 2 to 14): USD 297 (USD 3 under the target, including USD 4 for the coil economizer module); the reference motor adds USD 70 and is costed to each host, and the prototype's bench rig USD 35 (`bom/bom.csv`).
 
 ## Key design choices
 
@@ -152,9 +181,9 @@ All choices below were decided by Amish on 2026-09-25, going with the recommenda
 8. **Heavy case derated to 350 W on 24 V packs.**
 9. **Separate firmware.** Unmodified GPL-3.0 VESC firmware on the controller and MIT supervisor firmware on its own processor, linked only by CAN.
 
-10. **Module mass limit 2.0 kg.** The enclosure stays as drawn, because it is the heat sink and R9 is already at risk.
+10. **Module mass limit 2.0 kg.** The enclosure stays as drawn, because it is the heat sink and R9 depends on it.
 11. **TRL 3 engineering rules from MTC-CAL-001.** Two CAN buses on the supervisor, precharge closure at 0.6 s with a 90 % bus check, fuses rated for the full DC range with 1 kA breaking capacity, 4 mm² pack leads for 24 V hosts and a 24 V Zener coil suppressor. The fuse rating became 60 V DC and the controller overvoltage fault 66 V (instead of 58 V and 60 V) when R1 was raised to 60 V.
-12. **Sealed power connector to be evaluated before interface v0.1 is frozen.** The XT90 stays in the model and drawing as a provisional part.
+12. **Sealed power connector evaluated (MTC-DDR-004).** The XT90 stays in the model and drawing as the bench prototype's part until a sealed connector is chosen.
 
 Decisions are recorded in [decisions/](decisions/).
 
@@ -173,7 +202,7 @@ Decisions are recorded in [decisions/](decisions/).
 
 - Dual-motor hosts (PalletPilot): decided 2026-10-02, two controllers on one supervisor, with one safety loop and one contactor feeding both, so a stop removes torque from both wheels at once.
 - Brushed motors (StepClimber): decided 2026-10-02, the controller's DC motor mode; a different stage only if StepClimber's motor needs more current than the controller is rated for.
-- Which sealed power connector replaces the unsealed XT90 (R10): the paper evaluation is to be done now (decided 2026-10-02) against a rule: keyed, IP67 when mated, 40 A or more continuous at 60 V DC, no exposed live contacts on the pack side; first candidate class an industrial IP67 single-pole connector such as Amphenol's SurLok Plus. The XT90 stays for the bench prototype only.
-- Contactor coil economizer: decided 2026-10-02, fitted (heavy case about 55.6 °C on the walls instead of 58.4 °C); to be added to the model and BOM.
+- Which sealed power connector replaces the unsealed XT90 (R10): the paper evaluation is written (MTC-DDR-004); it recommends an industrial IP67 single-pole pair, two receptacles with different key coding, and chooses no part, because the rule (keyed, IP67 when mated, 40 A or more continuous at 60 V DC, no exposed live contacts on the pack side) has to be checked against a named part's datasheet at the parts purchase. The XT90 stays for the bench prototype only; R10 stays at risk.
+- Contactor coil economizer: decided 2026-10-02 and now in the design: a module on the supervisor carrier board (BOM line 3, USD 4), wired after the safety loop's break in the coil supply; heavy case 55.6 °C on the walls instead of 58.4 °C (MTC-CAL-001 v0.5).
 - Whether a pack in SwapCell legacy discharge accepts a heartbeat and moves to mode 2 without opening its output; raised with SwapCell.
-- Formal review of the license boundary between the VESC firmware (GPL-3.0) and the MIT supervisor firmware: decided 2026-10-02, a short written review before any firmware is published; a lawyer only if a commercial partner will ship the module.
+- License boundary between the VESC firmware (GPL-3.0) and the MIT supervisor firmware: the short written review is done (MTC-DDR-005), with a firmware readme to be written before any firmware is published; a lawyer only if a commercial partner will ship the module (decided 2026-10-02).

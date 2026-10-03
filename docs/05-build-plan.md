@@ -3,7 +3,7 @@ doc_id: MTC-BLD-001
 title: MotionCore prototype build plan
 project: MotionCore
 doc_type: Build plan
-version: "0.2"
+version: "0.3"
 status: Draft
 date: '2026-10-02'
 author: Amish Chadha
@@ -17,6 +17,10 @@ revisions:
     date: '2026-10-02'
     author: Amish Chadha
     change: "MTC-DDR-003 accepted (2026-10-02)"
+  - version: "0.3"
+    date: '2026-10-02'
+    author: Amish Chadha
+    change: 'Contactor coil economizer on the supervisor carrier board (board 85 x 108 mm), coil wiring through the loop break, first check; cost USD 297'
 ---
 
 # MotionCore prototype build plan
@@ -29,7 +33,7 @@ revisions:
 
 *Figure 1. Every component pulled apart and numbered in build order: the module (1 to 12), then the bench rig and devices (13 to 25).*
 
-The prototype is one MotionCore module bolted to a plywood bench board through its own host mounting points, with the reference hub motor held by its axle in two slotted uprights so the wheel turns clear of the board, an e-stop station screwed beside it and a short handlebar carrying the two brake levers and the key and throttle pod. The module is a finned aluminum tube standing on a floor plate, closed by a gasketed lid, with the motor controller, the contactor, the precharge and fuse block and the safety supervisor board inside and five sockets through its walls. Figure 1 shows the 25 components in the order you make or fit them. Ten are made in a small workshop: the floor plate, the finned tube (cut and drilled), the supervisor carrier board, the lid and its gasket, the bench board, the motor uprights, their feet, the Hall pickup bracket, the bar posts and the handlebar stub; the harness is made up from bought leads. Everything else is bought and fitted. The work is cutting and drilling aluminum plate, bar, angle and tube, tapping, setting rivet nuts, cutting plywood, and wiring bought modules with crimped and soldered joints. The parts cost about USD 293 for the MotionCore kit, plus USD 70 for the reference motor and USD 35 for the bench rig, from the bill of materials.
+The prototype is one MotionCore module bolted to a plywood bench board through its own host mounting points, with the reference hub motor held by its axle in two slotted uprights so the wheel turns clear of the board, an e-stop station screwed beside it and a short handlebar carrying the two brake levers and the key and throttle pod. The module is a finned aluminum tube standing on a floor plate, closed by a gasketed lid, with the motor controller, the contactor, the precharge and fuse block and the safety supervisor board inside and five sockets through its walls. Figure 1 shows the 25 components in the order you make or fit them. Ten are made in a small workshop: the floor plate, the finned tube (cut and drilled), the supervisor carrier board, the lid and its gasket, the bench board, the motor uprights, their feet, the Hall pickup bracket, the bar posts and the handlebar stub; the harness is made up from bought leads. Everything else is bought and fitted. The work is cutting and drilling aluminum plate, bar, angle and tube, tapping, setting rivet nuts, cutting plywood, and wiring bought modules with crimped and soldered joints. The parts cost about USD 297 for the MotionCore kit, plus USD 70 for the reference motor and USD 35 for the bench rig, from the bill of materials.
 
 > **Safety:** MotionCore switches a battery that can drive several hundred amperes into a short circuit and turns a motor. Build and wire the module with no battery in the room; keep the main fuse out until section 6 says otherwise; power it first from a current-limited bench supply; and never run the motor unless the wheel is clear of everything, a second person is at the e-stop and the e-stop has been checked that day. Cut aluminum edges are sharp: deburr everything. Wear eye protection for all cutting, drilling and soldering.
 
@@ -44,7 +48,7 @@ The concept showed what MotionCore does; some of its parts could not be made, fi
 | Enclosure body | An extruded box with a closed floor and vertical fins, which an extrusion cannot have | A 56 mm length of finned enclosure extrusion standing on a separate 3 mm floor plate, joined by conductive sealant and four screws into the corner ports (Figures 2 to 4) | One wall thickness and vertical fins, as the concept; the controller still sits on aluminum bolted to the fins |
 | Lid | A lip inside the walls that clashed with the corner ports, and no fixing | A flat lid on a 1 mm gasket, four screws into the same ports (Figures 11, 12) | Ports take both floor and lid screws |
 | Host mounting points | M6 inserts in cast bosses | Closed-end M6 rivet nuts in the floor plate, rubber pads under their flanges (Figure 5) | Same four M6 on 180 x 100 mm; the floor stays sealed |
-| Supervisor board | Standoffs standing inside the controller | A wider board (85 x 88 mm) with its standoffs beside the controller (Figure 9) | No overlap; 10 mm of air over the controller |
+| Supervisor board | Standoffs standing inside the controller | A wider board (85 x 108 mm, with a strip for the coil economizer) with its standoffs beside the controller (Figure 9) | No overlap; 10 mm of air over the controller; room for the economizer |
 | Connector panel | A plate outside a closed wall, connectors closer than their own flanges | Sockets straight through the end wall, spaced so every flange and nut has room (Figures 3, 6) | Buildable, and the power socket can be swapped by recutting one hole |
 | Precharge and fuse block | In the path of the socket bodies | Beside the contactor | Room behind the end wall for sockets and wires |
 | Speed sensor | No socket and no free pins | Its own small M8 socket between two fins (Figure 3) | Brings the sensor in without growing the module |
@@ -161,14 +165,15 @@ The tube's bottom end sits flat on the floor plate, edges flush. Spread a thin, 
 
 *Figure 8. Supervisor carrier board making sketch (MTC-DWG-103).*
 
-**What it is and what it is made from.** The safety supervisor, built for the prototype from bought modules on a carrier board. FR4 perforated board 1.6 mm thick, 2.54 mm pitch, cut to 85 x 88 mm.
+**What it is and what it is made from.** The safety supervisor, built for the prototype from bought modules on a carrier board. FR4 perforated board 1.6 mm thick, 2.54 mm pitch, cut to 85 x 108 mm.
 
 **How to make it.**
 
-1. Cut the board to 85 x 88 mm. Drill four 3.2 mm holes 15 and 75 from the edge nearest the far end, 6 and 82 from the socket-side edge.
+1. Cut the board to 85 x 108 mm. Drill four 3.2 mm holes 15 and 75 from the edge nearest the far end, 6 and 82 from the socket-side edge.
 2. Lay out the modules of Table 2 inside a 73 x 68 mm area in the middle, so they clear the lid by 10 mm and the four standoff screws.
-3. Fix each module with M2.5 or M3 screws and nylon spacers, or solder its header pins to the board.
-4. Wire them as Figure 10 shows, with the signal pins of Table 3.
+3. Fix the coil economizer module (24 x 14 x 8 mm) in the extra strip along the edge away from the sockets, 9 to 33 mm from the far-end edge and 91 to 105 mm from the socket-side edge, so it clears the lid by 10 mm and the contactor by more than 50 mm.
+4. Fix each module with M2.5 or M3 screws and nylon spacers, or solder its header pins to the board.
+5. Wire them as Figure 10 shows, with the signal pins of Table 3.
 
 *Table 2. Modules that make up the prototype supervisor.*
 
@@ -178,6 +183,7 @@ The tube's bottom end sits flat on the floor plate, edges flush. Spread a thin, 
 | CAN transceivers | Two 3.3 V CAN transceiver modules: one for the internal bus to the controller (500 kbit/s), one for the external bus to the pack or battery management system (250 kbit/s) |
 | Auxiliary supply | Buck converter, 18 to 75 V in, 12 V out, 10 W, for the contactor coil and the logic |
 | Coil switch | Logic-level N-channel MOSFET module, at least 2 A and 60 V, in series with the coil loop |
+| Coil economizer | 12 V, 1 A contactor coil economizer module: full voltage for 0.5 s, then pulse-width modulated hold at about 1 W; output capacitor 100 µF or less |
 | Precharge switch | Logic-level MOSFET module, at least 1 A and 75 V, in series with the precharge resistor |
 | Input conditioning | Opto-isolated or resistor-divider inputs for e-stop B, both brake switches and the speed pickup; a 0.8 to 4.2 V analog input for the throttle |
 
@@ -203,7 +209,7 @@ Wire it like this, with stranded copper, crimped ring lugs on studs and ferrules
 2. Power socket negative to the controller's battery negative: 4 mm².
 3. Precharge resistor and the supervisor's precharge switch in series, across the contactor's two terminals: 1 mm² (18 AWG).
 4. The supervisor's auxiliary supply from the fuse side of the contactor and from battery negative: 0.5 mm² (20 AWG).
-5. Coil loop: the supervisor's 12 V out to safety loop pin 1; safety loop pin 2 back to the contactor coil; the coil's other end through the supervisor's coil switch to ground: 0.5 mm². Fit the 24 V Zener diode across the coil, cathode to the positive end.
+5. Coil loop: the supervisor's 12 V out to safety loop pin 1; safety loop pin 2 back to the coil economizer's input, so the loop breaks the coil supply upstream of the economizer; the economizer's output to the contactor coil; the coil's other end through the supervisor's coil switch to ground: 0.5 mm². Fit the 24 V Zener diode across the coil, cathode to the positive end.
 6. Motor socket to the controller: three phases 4 mm²; Hall sensors, their 5 V and ground, and the motor temperature 0.25 mm² (24 AWG), pin for pin as the motor's maker lists them.
 7. Internal CAN between the supervisor and the controller: twisted pair 0.25 mm², with a 120 ohm terminator at each end.
 8. Safety loop pins 3, 4, 5 and 7, command pins 1 to 5 and speed pins 1, 3 and 4 to the supervisor: 0.25 mm², as Table 3.
@@ -526,6 +532,7 @@ These are the checks a TRL 4 test report would record; this plan only lists them
 | Precharge | R8 | Scope across the precharge resistor at power-up from 25 V | Current under 5 A; the contactor closes only after about 0.6 s and only with the bus at 90 % or more |
 | No automatic restart | R4 | Power up with the key on, then with the throttle open | The contactor stays open until the key is cycled with the throttle at zero |
 | E-stop | R3 | Scope on the contactor's main contacts; press the e-stop with the motor turning slowly | Power removed within 100 ms; the motor stays off until reset |
+| Coil economizer | R3, R9 | Bench, contactor closed: coil supply current after the first second; then press the e-stop and time the contactor opening from the loop opening | Coil held at about 1 W (about 83 mA at 12 V); contactor open within 50 ms of the loop opening |
 | Brake interlock | R5 | Pull each lever with the motor turning slowly | Drive torque removed within 200 ms of either lever |
 | Independent speed limit | R6 | Set a low test limit; turn the wheel faster than it by throttle | The contactor opens after the overspeed has lasted 0.5 s |
 | Fault reaction | R7 | Unplug the command plug, then the internal CAN, with the motor turning slowly | Torque removed within 200 ms of each |
@@ -557,8 +564,8 @@ Stop at each point. Carry on only when everything listed is true.
 
 - Model and constructability checks: `cad/src/model.py` (`python cad/src/model.py --check`); STEP and STL exports in `cad/step/` and `cad/stl/`.
 - Pictures: `cad/src/build_plan_media.py`, using `.kit/build_views.py`; written to `docs/05-build-plan/` and `cad/drawings/MTC-DWG-101` to `MTC-DWG-110`.
-- General arrangement: `cad/drawings/MTC-DWG-001.pdf`, Rev P3.
-- Calculations: `docs/04-calcs/01-sizing.md` (MTC-CAL-001 v0.3) and `docs/04-calcs/sizing.py`: thermal and floor joint (section 4), mass (section 9), cost (section 10).
+- General arrangement: `cad/drawings/MTC-DWG-001.pdf`, Rev P4.
+- Calculations: `docs/04-calcs/01-sizing.md` (MTC-CAL-001 v0.5) and `docs/04-calcs/sizing.py`: thermal and floor joint (section 4), mass (section 9), cost (section 10).
 - Bill of materials: `bom/bom.csv` and `bom/bom-notes.md`.
 - Decisions: `docs/decisions/0003-design-for-construction.md` (MTC-DDR-003), with MTC-DDR-001 and MTC-DDR-002; open items in `docs/06-design-decisions.md` (MTC-DEC-001).
-- Requirements: `docs/03-requirements.md` (MTC-REQ-001 v0.5).
+- Requirements: `docs/03-requirements.md` (MTC-REQ-001 v0.7).

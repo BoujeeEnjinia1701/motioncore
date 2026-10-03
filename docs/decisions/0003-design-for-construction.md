@@ -3,7 +3,7 @@ doc_id: MTC-DDR-003
 title: MotionCore design for construction
 project: MotionCore
 doc_type: Design decision record
-version: "0.2"
+version: "0.3"
 status: Draft
 date: '2026-10-02'
 author: Amish Chadha
@@ -17,6 +17,10 @@ revisions:
   date: '2026-10-02'
   author: Amish Chadha
   change: "Accepted by Amish (2026-10-02), with A1 to A3 as recommended; status kept Draft"
+- version: "0.3"
+  date: '2026-10-02'
+  author: Amish Chadha
+  change: 'A3 economizer carried into the design; appearance model brought into line with the constructable design'
 ---
 
 # 0003: Design for construction
@@ -77,7 +81,7 @@ For the enclosure, three routes keep a finned aluminum heat sink: (a) a cut leng
 ## Consequences
 
 - `design_state: constructable` in `project.yaml`. The build plan MTC-BLD-001 shows every component and step in pictures drawn from the model (`cad/src/build_plan_media.py`), and the open items are in the design decisions register MTC-DEC-001.
-- With A3 accepted on 2026-10-02, the coil economizer is to be added to the model, the BOM and the thermal calculation (heavy case about 55.6 °C on the walls and 57 °C on the floor plate); until then R9 stays at risk as calculated.
-- Requirement status is unchanged: none not met; R2, R9 and R10 at risk; R11 not verifiable at TRL 3; the rest met on paper or by design review (MTC-CAL-001 v0.3).
-- The photoreal renders (`media/render-*.png`), `media/card.png`, `media/social-preview.png` and the appearance model `cad/src/product_model.py` still show the concept: a connector panel plate, a lid with a lip, 4 mm fins and the kit loose on a bench. They need updating on Amish's Mac, where Blender is.
+- With A3 accepted on 2026-10-02, the coil economizer is in the design (carried out the same day): a module on the supervisor carrier board, which grows from 85 x 88 mm to 85 x 108 mm, BOM line 3 at USD 34 (was USD 30), the loop break upstream of it in the wiring picture and build plan, and the thermal and e-stop timing results in MTC-CAL-001 v0.5 (heavy case 55.6 °C on the walls and 56.9 °C on the floor plate; worst-case stop 74 ms). A1 is issued as interface v0.2 in the precis.
+- Requirement status at the time of this record (MTC-CAL-001 v0.3): none not met; R2, R9 and R10 at risk; R11 not verifiable at TRL 3; the rest met on paper or by design review. With the economizer (v0.5) R2 and R9 are met on paper.
+- The photoreal renders (`media/render-*.png`), `media/card.png`, `media/social-preview.png` and the appearance model `cad/src/product_model.py` are made next on Amish's Mac, where Blender is. The appearance model now follows the constructable design (floor plate joint, rivet nuts, sockets through the wall with flanges, M8 speed socket, wall vent, moved fuse block, lengthened supervisor board with the economizer); the lid window, lights, two-flange hub, layout and harness remain render-only.
 - The extrusion profile, the controller's mounting holes and the reference motor's axle width and disc mount are confirmed when parts are bought; the floor plate, tube and upright holes move to suit.

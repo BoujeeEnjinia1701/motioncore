@@ -36,9 +36,12 @@ P_CTRL0 = 1.5                       # W, logic, gate drive, internal supply
 R_CONTACTOR, R_INTERNAL, R_XT90 = 0.0005, 0.0015, 0.0006
 R_FUSE = {20: 0.0035, 40: 0.0015}   # blade-type fuse, cold resistance, typical
 # Auxiliary supply (wide-input buck to 12 V on the supervisor board)
-P_COIL, V_COIL = 4.0, 12.0          # W and V, contactor coil without economizer
+P_COIL, V_COIL = 4.0, 12.0          # W and V, contactor coil at pull-in (and the whole run without an economizer)
+P_COIL_HOLD = 1.0                   # W drawn from the 12 V rail while held with the coil economizer (its own loss included); MTC-DEC-001 2026-10-02
+T_PULLIN = 0.5                      # s, economizer applies full voltage at start, then drops to PWM hold
 P_SUP = 0.6                         # W, supervisor MCU, two CAN transceivers, sensors
 ETA_AUX = 0.85
+D_AUX_HOLD = (P_COIL - P_COIL_HOLD) / ETA_AUX   # W of input saved in steady state by the coil economizer
 # Thermal
 T_AMB = 40.0
 EMISS = 0.80                        # clear anodized aluminum
@@ -56,6 +59,7 @@ I_DROP_FRAC = 0.10                  # release at 10 % of nominal coil current
 T_MECH, T_ARC = 10e-3, 5e-3         # s, armature travel and contact opening; arc at up to 60 V DC
 T_RELEASE_SPEC = 50e-3              # s, maximum release time the contactor must meet with its suppressor
 V_ZENER, V_DIODE = 24.0, 0.8
+C_ECON = 100e-6                     # F, largest output capacitor allowed on the coil economizer (specified; it sits after the loop break)
 V_UV = 18.0                         # V, controller undervoltage cut-off, 8S setting
 V_OV = 66.0                         # V, controller overvoltage fault setting (60 V before MTC-DDR-002)
 # Precharge
@@ -74,7 +78,7 @@ RHO_CU = 0.0172                     # ohm mm2/m
 LEAD_LEN = 1.5                      # m, pack to module, one way
 # Mass (kg)
 RHO_AL = 2.70e-6                    # kg/mm3
-M_PARTS = {"controller": 0.20, "supervisor (85 x 88 mm board)": 0.07, "contactor": 0.25, "precharge and fuse block": 0.08,
+M_PARTS = {"controller": 0.20, "supervisor (85 x 108 mm board with the coil economizer)": 0.08, "contactor": 0.25, "precharge and fuse block": 0.08,
            "sockets, XT90 frame, M8 socket and vent": 0.14, "internal leads": 0.10,
            "pads, rivet nuts, standoffs, screws, gasket and sealant": 0.07}
 # Floor joint (MTC-DDR-003): the floor plate carries the controller, contactor and fuse block and joins the
@@ -217,7 +221,7 @@ therm = {}
 for name in op:
     a, b, fuse, pk = op[name]
     worst = b                                    # minimum voltage gives the highest current
-    q = worst["p_ctrl"] + (worst["p_aux"] - 0) + worst["p_path"]
+    q = worst["p_ctrl"] + (worst["p_aux"] - D_AUX_HOLD) + worst["p_path"]       # steady state: coil held by the economizer
     ts, g = surface_temp(q)
     p_fet = (worst["cond"] + worst["sw"]) / N_FET
     tj = ts + p_fet * RTH_FET
@@ -230,13 +234,13 @@ print(f"  Areas: lid {g['a_top']:.4f} m2, walls {g['a_side']:.4f} m2, fins {g['a
 hb = op["Heavy, 350 W on 8S LFP"][1]
 for kph in (2.0,):
     pc2, c2, s2 = ctrl_loss(PACKS["lfp8s"][2], hb["i"], kph)
-    q2 = pc2 + hb["p_aux"] + hb["p_path"]
+    q2 = pc2 + hb["p_aux"] - D_AUX_HOLD + hb["p_path"]
     ts2, _ = surface_temp(q2)
     print(f"  Sensitivity: heavy case with phase current {kph} x bus current (motor well below base speed): "
           f"controller {pc2:.1f} W, heat {q2:.1f} W, case {ts2:.1f} C")
 for rl in (2 * R_LEG,):
     k = rl / R_LEG
-    q3 = hb["p_ctrl"] + hb["cond"] * (k - 1) + hb["p_aux"] + hb["p_path"]
+    q3 = hb["p_ctrl"] + hb["cond"] * (k - 1) + hb["p_aux"] - D_AUX_HOLD + hb["p_path"]
     ts3, _ = surface_temp(q3)
     print(f"  Sensitivity: heavy case with twice the phase resistance (budget clone MOSFETs): heat {q3:.1f} W, "
           f"case {ts3:.1f} C")
@@ -244,11 +248,13 @@ sun = ALPHA_SUN * G_SUN * g["a_top"]
 q_ref = therm["Reference, 250 W on SwapCell"][0]
 ts_sun, _ = surface_temp(q_ref, sun)
 q_h = therm["Heavy, 350 W on 8S LFP"][0]
+ts_hv0 = therm["Heavy, 350 W on 8S LFP"][1]
 ts_sun_h, _ = surface_temp(q_h, sun)
 print(f"  Sun on the lid (information): {sun:.1f} W absorbed; reference case {ts_sun:.1f} C, heavy case {ts_sun_h:.1f} C")
-q_econ = q_h - (P_COIL - 1.0) / ETA_AUX
-ts_econ, _ = surface_temp(q_econ)
-print(f"  With a coil economizer (hold at 1 W): heavy case heat {q_econ:.1f} W, case {ts_econ:.1f} C")
+q_noecon = q_h + D_AUX_HOLD
+ts_noecon, _ = surface_temp(q_noecon)
+print(f"  Coil economizer (full voltage for {T_PULLIN} s, then PWM hold at {P_COIL_HOLD:.0f} W, loss included): saves {D_AUX_HOLD:.1f} W of input; "
+      f"heavy case heat {q_h:.1f} W, case {ts_hv0:.1f} C (without it {q_noecon:.1f} W, {ts_noecon:.1f} C)")
 L_, W_, T_ = P["body_l"], P["body_w"], P["wall"]
 a_joint = (2 * (L_ + W_) * T_ + 4 * math.pi * (P["port_r"] ** 2 - (P["port_hole"] / 2) ** 2)) / 1e6
 g_joint = K_FILM * a_joint / T_FILM
@@ -260,7 +266,7 @@ for name in ("Reference, 250 W on SwapCell", "Heavy, 350 W on 8S LFP"):
     joint[name] = (dt_j, ts + dt_j)
     print(f"  Floor joint ({name}): {q - p_sup_heat:.1f} W through {1e6 * a_joint:.0f} mm2 of sealant film, "
           f"conductance {g_joint:.1f} W/K: floor plate {dt_j:.1f} K above the walls, {ts + dt_j:.1f} C")
-aux_share = ref_a["p_aux"] / therm["Reference, 250 W on SwapCell"][0]
+aux_share = (ref_a["p_aux"] - D_AUX_HOLD) / therm["Reference, 250 W on SwapCell"][0]
 print(f"  Aux supply share of the reference-case heat: {100 * aux_share:.0f} %")
 
 ts_ref = therm["Reference, 250 W on SwapCell"][1]
@@ -268,11 +274,11 @@ ts_hv = therm["Heavy, 350 W on 8S LFP"][1]
 ts_500 = therm["Heavy, 500 W on 8S LFP (information)"][1]
 res("R2", f"250 W: {ref_a['i']:.1f} A at 46.8 V; 350 W: {heavy_a['i']:.1f} A at 25.6 V; 750 W for 10 s: "
           f"{peak['swapcell']['i']:.1f} A (SwapCell), {peak['lfp8s']['i']:.1f} A (8S LFP); CargoMule's 15 A pack "
-          f"limit caps its peak at about {peak['cargomule_cap']:.0f} W; heavy case thermal at risk (R9)",
-    "250 W reference; 350 W heavy (8S LFP); 750 W for 10 s", "At risk")
+          f"limit caps its peak at about {peak['cargomule_cap']:.0f} W; heavy case thermal met with the coil economizer (R9)",
+    "250 W reference; 350 W heavy (8S LFP); 750 W for 10 s", "Met (paper)")
 res("R9", f"{ts_ref:.1f} C reference; {ts_hv:.1f} C heavy at 350 W (floor plate {joint['Heavy, 350 W on 8S LFP'][1]:.1f} C), "
-          f"65 to 71 C in the sensitivity cases ({ts_500:.1f} C at 500 W); shade assumed",
-    "60 C or less at 40 C ambient", "At risk")
+          f"with the coil economizer; the sensitivity cases (twice the phase current, clone MOSFETs) reach 62 to 68 C ({ts_500:.1f} C at 500 W); shade assumed",
+    "60 C or less at 40 C ambient", "Met (paper)")
 
 # ---------------------------------------------------------------- 5. E-stop timing (R3)
 print("\n5. Emergency stop timing")
@@ -283,11 +289,19 @@ t_diode = tau * math.log((V_DIODE + i_nom * R_COIL) / (V_DIODE + i_drop * R_COIL
 t_zener = tau * math.log((V_ZENER + V_DIODE + i_nom * R_COIL) / (V_ZENER + V_DIODE + i_drop * R_COIL))
 e_cap = 0.5 * C_BUS * (PACKS["swapcell"][3] ** 2 - 40.0 ** 2)
 t_holdup = e_cap / ref_a["p_motor_in"]
-t_model_z = T_BOUNCE + t_zener + T_MECH + T_ARC + t_holdup
-t_model_d = T_BOUNCE + t_diode + T_MECH + T_ARC + t_holdup
-t_worst = T_BOUNCE + T_RELEASE_SPEC + T_ARC + t_holdup
+# Coil economizer (MTC-DEC-001, 2026-10-02): the safety loop breaks the 12 V supply upstream of it, so a stop removes its input;
+# only its output capacitor can still feed the coil, at the hold power, until it is spent.
+t_econ = 0.5 * C_ECON * V_COIL ** 2 / P_COIL_HOLD
+i_hold = i_nom * P_COIL_HOLD / P_COIL
+t_zener_hold = tau * math.log((V_ZENER + V_DIODE + i_hold * R_COIL) / (V_ZENER + V_DIODE + i_drop * R_COIL))
+t_model_z = T_BOUNCE + t_zener + T_MECH + T_ARC + t_holdup + t_econ
+t_model_d = T_BOUNCE + t_diode + T_MECH + T_ARC + t_holdup + t_econ
+t_worst = T_BOUNCE + T_RELEASE_SPEC + T_ARC + t_holdup + t_econ
 print(f"  Coil {R_COIL:.0f} ohm, {1000 * i_nom:.0f} mA, tau {1000 * tau:.1f} ms; decay to release: diode "
       f"{1000 * t_diode:.1f} ms, {V_ZENER:.0f} V Zener {1000 * t_zener:.1f} ms")
+print(f"  Coil economizer upstream of the loop break: output capacitor of at most {1e6 * C_ECON:.0f} uF holds {1000 * t_econ:.1f} ms of coil power at {P_COIL_HOLD:.0f} W "
+      f"(added to both release times below); the coil starts from the hold current {1000 * i_hold:.0f} mA, so decay to release is {1000 * t_zener_hold:.1f} ms "
+      f"with the Zener (the figure above, from full current, is kept as the bound); the contactor must still release within {1000 * T_RELEASE_SPEC:.0f} ms")
 print(f"  Bus capacitor hold-up after opening: {e_cap:.2f} J, {1000 * t_holdup:.1f} ms at the reference point")
 print(f"  Power removed: modeled {1000 * t_model_z:.0f} ms with Zener ({1000 * t_model_d:.0f} ms with a plain diode);"
       f" worst case with a {1000 * T_RELEASE_SPEC:.0f} ms release spec {1000 * t_worst:.0f} ms")
